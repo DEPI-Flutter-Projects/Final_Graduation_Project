@@ -1,11 +1,11 @@
-# 🚗 El-Moshwar (المشوار)
+# 🚗 El-Meshwar (المشوار)
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.16-02569B?style=for-the-badge&logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.2-0175C2?style=for-the-badge&logo=dart)
 ![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-3ECF8E?style=for-the-badge&logo=supabase)
 ![GetX](https://img.shields.io/badge/State%20Management-GetX-8F00FF?style=for-the-badge)
 
-**El-Moshwar** is a comprehensive Egyptian Cost & Route Assistant application designed to help users plan their trips, calculate costs efficiently across various transportation modes (Car, Metro, Microbus, etc.), and manage their vehicle expenses.
+**El-Meshwar** is a comprehensive Egyptian Cost & Route Assistant application designed to help users plan their trips, calculate costs efficiently across various transportation modes (Car, Metro, Microbus, etc.), and manage their vehicle expenses.
 
 ---
 
