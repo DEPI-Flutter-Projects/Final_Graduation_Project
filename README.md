@@ -93,15 +93,36 @@
 
 ---
 
-## 📱 Screenshots
+## 📱 App Gallery
 
-| Home Screen | Route Planner | Cost Calculator |
-|:-----------:|:-------------:|:---------------:|
-| *(Add Image)* | *(Add Image)* | *(Add Image)* |
+<div align="center">
 
-| Garage | Analytics | Profile |
-|:------:|:---------:|:-------:|
-| *(Add Image)* | *(Add Image)* | *(Add Image)* |
+### 🔐 Authentication & Onboarding
+| Sign Up | Forgot Password |
+|:---:|:---:|
+| <img src="assets/screenshots/Signup.png" width="250" /> | <img src="assets/screenshots/fORGOT PASSWORD.png" width="250" /> |
+
+### 🏠 Home & Profile
+| Home Screen | Profile Overview | Profile Details |
+|:---:|:---:|:---:|
+| <img src="assets/screenshots/Homescreen.png" width="250" /> | <img src="assets/screenshots/Profile 1.png" width="250" /> | <img src="assets/screenshots/Profile 2.png" width="250" /> |
+
+### 🚘 Garage Management
+| Garage List | Add Vehicle |
+|:---:|:---:|
+| <img src="assets/screenshots/Garage.png" width="250" /> | <img src="assets/screenshots/Garage 2.png" width="250" /> |
+
+### 💰 Cost & Analytics
+| Cost Analysis | Cost Breakdown | Analytics Overview | Detailed Analytics |
+|:---:|:---:|:---:|:---:|
+| <img src="assets/screenshots/Cost Analysis 1.png" width="200" /> | <img src="assets/screenshots/Cost Analysis 2.png" width="200" /> | <img src="assets/screenshots/Analytics 1.png" width="200" /> | <img src="assets/screenshots/Analytics detailed 1.png" width="200" /> |
+
+### 🗺️ Route Planning
+| Route Analysis |
+|:---:|
+| <img src="assets/screenshots/Route analysis.png" width="250" /> |
+
+</div>
 
 ---
 
