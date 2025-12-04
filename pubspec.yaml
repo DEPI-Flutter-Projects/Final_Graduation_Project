@@ -60,3 +60,4 @@ flutter:
     - assets/egypt_cars.json
     - assets/animations/
     - assets/logo/
+    - .env
