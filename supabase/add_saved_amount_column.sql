@@ -1,1 +1,0 @@
-ALTER TABLE user_routes ADD COLUMN IF NOT EXISTS saved_amount NUMERIC DEFAULT 0.0;
