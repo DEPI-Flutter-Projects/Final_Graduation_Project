@@ -22,11 +22,11 @@ class RouteStop {
   String? address;
   double? lat;
   double? lng;
-  String type; 
+  String type;
   StopPriority priority;
   Color color;
   TimeOfDay? timeConstraint;
-  String? visitAfterId; 
+  String? visitAfterId;
 
   RouteStop({
     required this.id,
@@ -73,13 +73,11 @@ class RouteOptimizerController extends GetxController {
   final LocationController locationController = Get.find<LocationController>();
 
   final stops = <RouteStop>[].obs;
-  final originalStops =
-      <RouteStop>[].obs; 
+  final originalStops = <RouteStop>[].obs;
   final isOptimizing = false.obs;
   final isOptimized = false.obs;
-  final optimizationCriteria = 'Distance'.obs; 
+  final optimizationCriteria = 'Distance'.obs;
 
-  
   final shortcuts = <Map<String, dynamic>>[
     {'name': 'Home', 'icon': Icons.home, 'color': Colors.blue, 'type': 'Home'},
     {
@@ -102,10 +100,8 @@ class RouteOptimizerController extends GetxController {
     },
   ].obs;
 
-  
   final _deletedStops = <RouteStop>[];
 
-  
   late Box box;
 
   @override
@@ -129,7 +125,6 @@ class RouteOptimizerController extends GetxController {
       double? lat,
       double? lng,
       String? address}) {
-    
     if (lat != null && lng != null) {
       final duplicate =
           stops.firstWhereOrNull((s) => s.lat == lat && s.lng == lng);
@@ -258,7 +253,6 @@ class RouteOptimizerController extends GetxController {
   }
 
   Future<void> addShortcut(Map<String, dynamic> shortcut) async {
-    
     if (shortcut.containsKey('lat') && shortcut.containsKey('lng')) {
       addStop(
         name: shortcut['name'],
@@ -269,7 +263,6 @@ class RouteOptimizerController extends GetxController {
         address: shortcut['address'],
       );
     } else {
-      
       final result = await Get.dialog(
         Dialog(
           shape:
@@ -290,7 +283,6 @@ class RouteOptimizerController extends GetxController {
         final LatLng coords = result['coordinates'];
         final String address = result['address'];
 
-        
         addStop(
           name: shortcut['name'],
           type: shortcut['type'],
@@ -300,7 +292,6 @@ class RouteOptimizerController extends GetxController {
           address: address,
         );
       } else {
-        
         addStop(
           name: shortcut['name'],
           type: shortcut['type'],
@@ -327,9 +318,13 @@ class RouteOptimizerController extends GetxController {
           child: const Text('UNDO', style: TextStyle(color: Colors.white)),
         ),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.grey.shade900,
         colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
         duration: const Duration(seconds: 3),
+        overlayBlur: 0,
+        icon: const Icon(Icons.delete_outline, color: Colors.white),
       );
     }
   }
@@ -392,25 +387,29 @@ class RouteOptimizerController extends GetxController {
   Future<void> optimizeRoute() async {
     if (stops.length < 2) {
       Get.snackbar(
-          'Not enough stops', 'Please add at least 2 stops to optimize.');
+        'Not enough stops',
+        'Please add at least 2 stops to optimize.',
+        backgroundColor: Colors.orange.shade900,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+        overlayBlur: 0,
+      );
       return;
     }
 
     isOptimizing.value = true;
 
-    
-    
     if (!isOptimized.value) {
       originalStops.assignAll(stops.map((s) => s.copyWith()).toList());
     } else {
-      
       stops.assignAll(originalStops.map((s) => s.copyWith()).toList());
     }
 
-    
     await Future.delayed(const Duration(seconds: 1));
 
-    
     final validStops =
         stops.where((s) => s.lat != null && s.lng != null).toList();
     final invalidStops =
@@ -419,10 +418,8 @@ class RouteOptimizerController extends GetxController {
     if (validStops.isEmpty) {
       stops.sort((a, b) => b.priority.index.compareTo(a.priority.index));
     } else {
-      
       List<RouteStop> optimizedOrder = [];
 
-      
       final start = validStops.first;
       final end = validStops.last;
       final intermediate = validStops.sublist(1, validStops.length - 1);
@@ -430,13 +427,10 @@ class RouteOptimizerController extends GetxController {
       optimizedOrder.add(start);
       List<RouteStop> remaining = List.from(intermediate);
 
-      
       if (optimizationCriteria.value == 'Time') {
-        
         final timedStops =
             remaining.where((s) => s.timeConstraint != null).toList();
 
-        
         timedStops.sort((a, b) {
           final t1 = a.timeConstraint!;
           final t2 = b.timeConstraint!;
@@ -449,10 +443,7 @@ class RouteOptimizerController extends GetxController {
         remaining.removeWhere((s) => s.timeConstraint != null);
       }
 
-      
-      if (optimizedOrder.isEmpty && remaining.isNotEmpty) {
-        
-      }
+      if (optimizedOrder.isEmpty && remaining.isNotEmpty) {}
 
       while (remaining.isNotEmpty) {
         final current = optimizedOrder.last;
@@ -460,12 +451,11 @@ class RouteOptimizerController extends GetxController {
         double minDistance = double.infinity;
 
         for (var candidate in remaining) {
-          
           if (candidate.visitAfterId != null) {
             bool dependencyMet =
                 optimizedOrder.any((s) => s.id == candidate.visitAfterId);
             if (!dependencyMet) {
-              continue; 
+              continue;
             }
           }
 
@@ -473,7 +463,6 @@ class RouteOptimizerController extends GetxController {
               current.lat!, current.lng!, candidate.lat!, candidate.lng!);
           double priorityFactor = 1.0;
 
-          
           if (optimizationCriteria.value == 'Time') {
             if (candidate.priority == StopPriority.high) priorityFactor = 0.6;
             if (candidate.priority == StopPriority.medium) priorityFactor = 0.8;
@@ -487,7 +476,6 @@ class RouteOptimizerController extends GetxController {
           }
         }
 
-        
         if (nearest == null) {
           for (var candidate in remaining) {
             if (candidate.visitAfterId != null) {
@@ -498,7 +486,7 @@ class RouteOptimizerController extends GetxController {
             nearest = candidate;
             break;
           }
-          
+
           nearest ??= remaining.first;
         }
 
@@ -508,7 +496,6 @@ class RouteOptimizerController extends GetxController {
 
       optimizedOrder.add(end);
 
-      
       if (optimizationCriteria.value != 'Time') {
         _applyTwoOpt(optimizedOrder);
       }
@@ -519,13 +506,10 @@ class RouteOptimizerController extends GetxController {
     isOptimizing.value = false;
     isOptimized.value = true;
 
-    
     final originalDist = calculateTotalDistance(originalStops);
     final optimizedDist = calculateTotalDistance(stops);
     final savedDist = originalDist - optimizedDist;
 
-    
-    
     final originalTimeMin = (originalDist / 30) * 60;
     final optimizedTimeMin = (optimizedDist / 30) * 60;
     final savedTime = originalTimeMin - optimizedTimeMin;
@@ -535,7 +519,6 @@ class RouteOptimizerController extends GetxController {
       message =
           'Saved ~${savedTime.toStringAsFixed(0)} mins! (Est. based on distance)';
     } else if (optimizationCriteria.value == 'Fuel') {
-      
       final savedFuel = savedDist * 0.1;
       message = 'Saved ~${savedFuel.toStringAsFixed(1)} L of fuel!';
     } else {
@@ -545,10 +528,14 @@ class RouteOptimizerController extends GetxController {
     Get.snackbar(
       'Route Optimized!',
       '$message Tap the map to see details.',
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.green.shade800,
       colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      duration: const Duration(seconds: 5),
       icon: const Icon(Icons.check_circle, color: Colors.white),
-      duration: const Duration(seconds: 4),
+      overlayBlur: 0,
       mainButton: TextButton(
         onPressed: viewRouteAnalysis,
         child: const Text('ANALYZE',
@@ -583,13 +570,12 @@ class RouteOptimizerController extends GetxController {
 
     if (validOptimized.length < 2) return;
 
-    Get.toNamed(Routes.MAP_VIEW, arguments: {
+    Get.toNamed(Routes.mapView, arguments: {
       'mode': 'analysis_view',
       'original_stops': validOriginal.map((s) => s.toJson()).toList(),
       'optimized_stops': validOptimized.map((s) => s.toJson()).toList(),
     });
 
-    
     if (Get.isRegistered<MapController>()) {
       Get.find<MapController>().refreshArguments();
     }
@@ -613,7 +599,6 @@ class RouteOptimizerController extends GetxController {
     }
   }
 
-  
   Future<void> updateStopAddressText(String id, String newAddress) async {
     final index = stops.indexWhere((stop) => stop.id == id);
     if (index != -1) {
@@ -660,7 +645,6 @@ class RouteOptimizerController extends GetxController {
   }
 
   Future<void> pickLocationForStop(String stopId) async {
-    
     final result = await Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -669,7 +653,7 @@ class RouteOptimizerController extends GetxController {
           borderRadius: BorderRadius.circular(20),
           child: const SizedBox(
             width: double.infinity,
-            height: 500, 
+            height: 500,
             child: LocationPickerView(),
           ),
         ),
@@ -688,11 +672,20 @@ class RouteOptimizerController extends GetxController {
         stops.where((s) => s.lat != null && s.lng != null).toList();
     if (validStops.length < 2) {
       Get.snackbar(
-          'Cannot view route', 'Need at least 2 locations with coordinates.');
+        'Cannot view route',
+        'Need at least 2 locations with coordinates.',
+        backgroundColor: Colors.orange.shade900,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+        overlayBlur: 0,
+      );
       return;
     }
 
-    Get.toNamed(Routes.MAP_VIEW, arguments: {
+    Get.toNamed(Routes.mapView, arguments: {
       'mode': 'route_view',
       'stops': validStops
           .map((s) => {
@@ -704,7 +697,6 @@ class RouteOptimizerController extends GetxController {
           .toList()
     });
 
-    
     if (Get.isRegistered<MapController>()) {
       Get.find<MapController>().refreshArguments();
     }
@@ -718,7 +710,17 @@ class RouteOptimizerController extends GetxController {
     final validStops =
         stops.where((s) => s.lat != null && s.lng != null).toList();
     if (validStops.length < 2) {
-      Get.snackbar('Cannot navigate', 'Need at least 2 locations.');
+      Get.snackbar(
+        'Cannot navigate',
+        'Need at least 2 locations.',
+        backgroundColor: Colors.orange.shade900,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.navigation, color: Colors.white),
+        overlayBlur: 0,
+      );
       return;
     }
 
@@ -739,17 +741,35 @@ class RouteOptimizerController extends GetxController {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        Get.snackbar('Error', 'Could not open Maps application');
+        Get.snackbar(
+          'Error',
+          'Could not open Maps application',
+          backgroundColor: Colors.red.shade900,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+          overlayBlur: 0,
+        );
       }
     } catch (e) {
       debugPrint('Error launching maps: $e');
-      Get.snackbar('Error', 'Could not open Maps application');
+      Get.snackbar(
+        'Error',
+        'Could not open Maps application',
+        backgroundColor: Colors.red.shade900,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        overlayBlur: 0,
+      );
     }
   }
 
-  
   Future<List<Map<String, dynamic>>> analyzeAllRoutes() async {
-    
     final baselineStops = isOptimized.value ? originalStops : stops;
     if (baselineStops.length < 3) return [];
 
@@ -757,7 +777,6 @@ class RouteOptimizerController extends GetxController {
     final criteriaList = ['Distance', 'Time', 'Fuel'];
 
     for (var criteria in criteriaList) {
-      
       final tempStops = baselineStops.map((s) => s.copyWith()).toList();
       final start = tempStops.first;
       final end = tempStops.last;
@@ -766,9 +785,6 @@ class RouteOptimizerController extends GetxController {
       final optimizedOrder = <RouteStop>[start];
       final remaining = List<RouteStop>.from(intermediate);
 
-      
-
-      
       if (criteria == 'Time') {
         final timedStops =
             remaining.where((s) => s.timeConstraint != null).toList();
@@ -783,7 +799,6 @@ class RouteOptimizerController extends GetxController {
         remaining.removeWhere((s) => s.timeConstraint != null);
       }
 
-      
       if (optimizedOrder.isEmpty && remaining.isNotEmpty) {
         int startIndex = -1;
         for (int i = 0; i < remaining.length; i++) {
@@ -855,12 +870,10 @@ class RouteOptimizerController extends GetxController {
 
       optimizedOrder.add(end);
 
-      
       if (criteria != 'Time') {
         _applyTwoOpt(optimizedOrder);
       }
 
-      
       double totalDist = 0;
       for (int i = 0; i < optimizedOrder.length - 1; i++) {
         totalDist += _calculateDistance(
@@ -870,17 +883,16 @@ class RouteOptimizerController extends GetxController {
             optimizedOrder[i + 1].lng!);
       }
 
-      
-      double speed = 30.0; 
-      double fuelRate = 0.15; 
+      double speed = 30.0;
+      double fuelRate = 0.15;
 
       if (criteria == 'Time') {
-        speed = 35.0; 
-        
-        totalDist *= 1.02; 
+        speed = 35.0;
+
+        totalDist *= 1.02;
       } else if (criteria == 'Fuel') {
-        fuelRate = 0.14; 
-        speed = 28.0; 
+        fuelRate = 0.14;
+        speed = 28.0;
       }
 
       double timeMinutes = (totalDist / speed) * 60;
@@ -898,25 +910,22 @@ class RouteOptimizerController extends GetxController {
     return results;
   }
 
-  
   void _applyTwoOpt(List<RouteStop> route) {
     if (route.length < 4) {
-      return; 
+      return;
     }
 
     bool improved = true;
     int iterations = 0;
 
-    
     while (improved && iterations < 50) {
       improved = false;
       iterations++;
 
       for (int i = 1; i < route.length - 2; i++) {
         for (int j = i + 1; j < route.length - 1; j++) {
-          if (j - i == 1) continue; 
+          if (j - i == 1) continue;
 
-          
           double d1 = _calculateDistance(route[i - 1].lat!, route[i - 1].lng!,
               route[i].lat!, route[i].lng!);
           double d2 = _calculateDistance(route[j].lat!, route[j].lng!,
@@ -930,12 +939,9 @@ class RouteOptimizerController extends GetxController {
           double newDist = d3 + d4;
 
           if (newDist < currentDist) {
-            
-            
             final newRoute = List<RouteStop>.from(route);
             _reverseSegment(newRoute, i, j);
 
-            
             if (_isValidRoute(newRoute)) {
               route.setRange(0, route.length, newRoute);
               improved = true;
@@ -957,21 +963,19 @@ class RouteOptimizerController extends GetxController {
   }
 
   bool _isValidRoute(List<RouteStop> route) {
-    
     for (int i = 0; i < route.length; i++) {
       final stop = route[i];
       if (stop.visitAfterId != null) {
         final dependencyIndex =
             route.indexWhere((s) => s.id == stop.visitAfterId);
         if (dependencyIndex == -1 || dependencyIndex > i) {
-          return false; 
+          return false;
         }
       }
     }
     return true;
   }
 
-  
   void updateShortcut(
       Map<String, dynamic> shortcut, Map<String, dynamic> newData) {
     shortcut['name'] = newData['name'];
@@ -995,7 +999,6 @@ class RouteOptimizerController extends GetxController {
   }
 
   void createShortcut(Map<String, dynamic> shortcutData) {
-    
     if (!shortcutData.containsKey('type')) {
       shortcutData['type'] = 'Other';
     }
@@ -1027,10 +1030,6 @@ class RouteOptimizerController extends GetxController {
     return null;
   }
 
-  
-
-  
-
   void _saveSession() {
     final stopsJson = stops.map((s) => s.toJson()).toList();
     box.put('current_stops', stopsJson);
@@ -1059,7 +1058,6 @@ class RouteOptimizerController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1075,10 +1073,7 @@ class RouteOptimizerController extends GetxController {
                   .animate()
                   .scale(duration: 600.ms, curve: Curves.elasticOut)
                   .fadeIn(duration: 400.ms),
-
               const SizedBox(height: 24),
-
-              
               const Text(
                 'Welcome Back!',
                 style: TextStyle(
@@ -1087,10 +1082,7 @@ class RouteOptimizerController extends GetxController {
                   color: AppColors.textPrimaryLight,
                 ),
               ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-
               const SizedBox(height: 12),
-
-              
               const Text(
                 'We found an unfinished route from your last session. Would you like to pick up where you left off?',
                 textAlign: TextAlign.center,
@@ -1100,16 +1092,12 @@ class RouteOptimizerController extends GetxController {
                   height: 1.5,
                 ),
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
-
               const SizedBox(height: 32),
-
-              
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () {
-                        
                         Get.back();
                       },
                       style: OutlinedButton.styleFrom(
@@ -1132,8 +1120,12 @@ class RouteOptimizerController extends GetxController {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        _restoreSession();
-                        Get.back();
+                        Get.back(); // Close dialog first to avoid context issues
+                        try {
+                          _restoreSession();
+                        } catch (e) {
+                          // Get.log('Error restoring session: $e');
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -1170,7 +1162,6 @@ class RouteOptimizerController extends GetxController {
 
       if (savedStops.isNotEmpty) {
         stops.assignAll(savedStops.map((json) {
-          
           return RouteStop(
             id: json['id'],
             name: json['name'],
@@ -1179,7 +1170,6 @@ class RouteOptimizerController extends GetxController {
             address: json['address'],
             type: json['type'] ?? 'Other',
             visitAfterId: json['visitAfterId'],
-            
             color: _getRandomColor(),
             priority: StopPriority.medium,
           );
@@ -1213,8 +1203,8 @@ class RouteOptimizerController extends GetxController {
     };
 
     final history = box.get('history', defaultValue: []) as List;
-    history.insert(0, historyItem); 
-    if (history.length > 10) history.removeLast(); 
+    history.insert(0, historyItem);
+    if (history.length > 10) history.removeLast();
     box.put('history', history);
   }
 
@@ -1240,7 +1230,7 @@ class RouteOptimizerController extends GetxController {
     optimizationCriteria.value = historyItem['criteria'];
     isOptimized.value = true;
     _saveSession();
-    Get.back(); 
+    Get.back();
     Get.snackbar('History Restored', 'Route restored from history.');
   }
 

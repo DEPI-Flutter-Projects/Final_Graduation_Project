@@ -11,21 +11,15 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
 
   @override
   Widget build(BuildContext context) {
-    
-    
     final vehicleService = Get.find<VehicleService>();
 
-    
     GarageController? garageController;
     try {
       if (Get.isRegistered<GarageController>()) {
         garageController = Get.find<GarageController>();
       }
-    } catch (_) {
-      
-    }
+    } catch (_) {}
 
-    
     if (garageController != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         garageController!.showSwipeHintIfNeeded(context);
@@ -163,10 +157,9 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
       VehicleService service, GarageController? controller) {
     final brandName = vehicle['car_models']['car_brands']['name'];
     final modelName = vehicle['car_models']['name'];
-    
+
     final color = _getVehicleColor(brandName);
 
-    
     if (controller == null) {
       return GestureDetector(
         onTap: () {
@@ -200,13 +193,11 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
       ),
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd) {
-          
           controller.setDefault(vehicle['id']);
-          Get.back(); 
+          Get.back();
           AppSnackbars.showSuccess('Success', 'Vehicle set as default');
-          return false; 
+          return false;
         } else {
-          
           return await Get.dialog(
             AlertDialog(
               title: const Text('Delete Vehicle'),
@@ -248,7 +239,7 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
   Widget _buildVehicleCardContent(String brandName, String modelName,
       Map<String, dynamic> vehicle, Color color, bool isSelected) {
     return Container(
-      width: (Get.width - 48 - 12) / 2, 
+      width: (Get.width - 48 - 12) / 2,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey.shade50,
@@ -310,10 +301,10 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
     return GestureDetector(
       onTap: () {
         Get.back();
-        Get.toNamed(Routes.ADD_VEHICLE);
+        Get.toNamed(Routes.addVehicle);
       },
       child: Container(
-        width: Get.width - 48, 
+        width: Get.width - 48,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -350,7 +341,6 @@ class VehicleSelectorWidget extends GetView<VehicleService> {
   }
 
   Color _getVehicleColor(String brand) {
-    
     final colors = [
       Colors.blue,
       Colors.red,

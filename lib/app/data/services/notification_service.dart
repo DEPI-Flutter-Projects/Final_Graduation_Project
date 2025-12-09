@@ -29,18 +29,15 @@ class NotificationService extends GetxService {
   Future<void> _initNotifications() async {
     tz.initializeTimeZones();
 
-    
     if (!Hive.isAdapterRegistered(2)) {
       Hive.registerAdapter(AppNotificationAdapter());
     }
     _notificationsBox = await Hive.openBox<AppNotification>('notifications');
     _loadNotifications();
 
-    
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
       requestAlertPermission: false,
@@ -56,10 +53,7 @@ class NotificationService extends GetxService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse details) {
-        
-        
-      },
+      onDidReceiveNotificationResponse: (NotificationResponse details) {},
     );
 
     await _createNotificationChannel();
@@ -68,10 +62,10 @@ class NotificationService extends GetxService {
 
   Future<void> _createNotificationChannel() async {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'elmoshwar_notifications_v3', 
-      'El-Moshwar Alerts', 
-      description: 'Navigation and system alerts', 
-      importance: Importance.max, 
+      'elmoshwar_notifications_v3',
+      'El-Moshwar Alerts',
+      description: 'Navigation and system alerts',
+      importance: Importance.max,
       playSound: true,
       enableVibration: true,
     );
@@ -83,14 +77,11 @@ class NotificationService extends GetxService {
   }
 
   Future<void> requestPermissions() async {
-    
     final status = await Permission.notification.request();
     if (status.isDenied) {
-      
       debugPrint('Notification permission denied');
     }
 
-    
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
@@ -116,10 +107,9 @@ class NotificationService extends GetxService {
     required String type,
     String? payload,
   }) async {
-    
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'elmoshwar_notifications_v3', 
+      'elmoshwar_notifications_v3',
       'El-Moshwar Alerts',
       channelDescription: 'Navigation and system alerts',
       importance: Importance.max,
@@ -127,7 +117,7 @@ class NotificationService extends GetxService {
       showWhen: true,
       enableVibration: true,
       playSound: true,
-      fullScreenIntent: true, 
+      fullScreenIntent: true,
     );
 
     const NotificationDetails platformChannelSpecifics =
@@ -141,7 +131,6 @@ class NotificationService extends GetxService {
       payload: payload,
     );
 
-    
     final notification = AppNotification(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
@@ -161,7 +150,17 @@ class NotificationService extends GetxService {
       final notification = notifications[index];
       notification.isRead = true;
       await notification.save();
-      notifications[index] = notification; 
+      notifications[index] = notification;
+      _updateUnreadCount();
+    }
+  }
+
+  Future<void> deleteNotification(String id) async {
+    final index = notifications.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      final notification = notifications[index];
+      await notification.delete();
+      notifications.removeAt(index);
       _updateUnreadCount();
     }
   }

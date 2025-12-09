@@ -39,11 +39,10 @@ class ShareService extends GetxService {
           ),
         ),
       ),
-      delay:
-          const Duration(seconds: 2), 
-      pixelRatio: 1.0, 
-      targetSize: const Size(1080, 2400), 
-      context: Get.context, 
+      delay: const Duration(seconds: 2),
+      pixelRatio: 1.0,
+      targetSize: const Size(1080, 2400),
+      context: Get.context,
     );
   }
 
@@ -58,7 +57,6 @@ class ShareService extends GetxService {
     String? carModel,
   }) async {
     try {
-      
       final imageBytes = await _generateRouteImageBytes(
         startLocation: startLocation,
         endLocation: endLocation,
@@ -70,18 +68,17 @@ class ShareService extends GetxService {
         carModel: carModel,
       );
 
-      
       final tempDir = await getTemporaryDirectory();
       final fileName =
           'route_share_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = await File('${tempDir.path}/$fileName').create();
       await file.writeAsBytes(imageBytes);
 
-      
-      
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Check out my route on El-Moshwar! 🚗💨',
+      await SharePlus.instance.share(
+        ShareParams(
+          subject: 'Check out my route on El-Moshwar! 🚗💨',
+          files: [XFile(file.path)],
+        ),
       );
     } catch (e) {
       debugPrint('Error sharing route image: $e');
@@ -100,12 +97,10 @@ class ShareService extends GetxService {
     String? carModel,
   }) async {
     try {
-      
       if (!await Gal.hasAccess()) {
         await Gal.requestAccess();
       }
 
-      
       final imageBytes = await _generateRouteImageBytes(
         startLocation: startLocation,
         endLocation: endLocation,
@@ -117,7 +112,6 @@ class ShareService extends GetxService {
         carModel: carModel,
       );
 
-      
       await Gal.putImageBytes(imageBytes,
           name: 'ElMoshwar_Route_${DateTime.now().millisecondsSinceEpoch}');
       Get.snackbar('Success', 'Image saved to gallery! 📸',
@@ -139,8 +133,6 @@ class ShareService extends GetxService {
     required String mode,
   }) async {
     try {
-      
-      
       final uri = Uri(
         scheme: 'elmoshwar',
         host: 'share',
@@ -153,10 +145,11 @@ class ShareService extends GetxService {
 
       final link = uri.toString();
 
-      
-      await Share.share(
-        'Tap to view my route on El-Moshwar:\n$link',
-        subject: 'El-Moshwar Route',
+      await SharePlus.instance.share(
+        ShareParams(
+          text: 'Tap to view my route on El-Moshwar:\n$link',
+          subject: 'El-Moshwar Route',
+        ),
       );
     } catch (e) {
       debugPrint('Error sharing route link: $e');

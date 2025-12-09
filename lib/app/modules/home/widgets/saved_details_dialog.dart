@@ -14,17 +14,18 @@ class SavedDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(20),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: theme.shadowColor.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -33,17 +34,16 @@ class SavedDetailsDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            
             Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.savings_rounded,
-                      color: AppColors.primary, size: 28),
+                  child: Icon(Icons.savings_rounded,
+                      color: theme.colorScheme.primary, size: 28),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -55,14 +55,14 @@ class SavedDetailsDialog extends StatelessWidget {
                         style: GoogleFonts.outfit(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimaryLight,
+                          color: theme.textTheme.titleLarge?.color,
                         ),
                       ),
                       Text(
                         'This Month vs Last Month',
                         style: GoogleFonts.outfit(
                           fontSize: 14,
-                          color: AppColors.textSecondaryLight,
+                          color: theme.textTheme.bodyMedium?.color,
                         ),
                       ),
                     ],
@@ -70,14 +70,13 @@ class SavedDetailsDialog extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => Get.back(),
-                  icon: const Icon(Icons.close,
-                      color: AppColors.textTertiaryLight),
+                  icon: Icon(Icons.close,
+                      color: theme.iconTheme.color?.withValues(alpha: 0.5) ??
+                          AppColors.textTertiaryLight),
                 ),
               ],
             ),
             const SizedBox(height: 32),
-
-            
             Obx(() {
               final currency = settings.currency.value;
               final rate = settings.exchangeRate.value;
@@ -89,9 +88,11 @@ class SavedDetailsDialog extends StatelessWidget {
 
               return Column(
                 children: [
-                  _buildStatRow('This Month', thisMonth, currency, true),
+                  _buildStatRow(
+                      'This Month', thisMonth, currency, true, context),
                   const SizedBox(height: 16),
-                  _buildStatRow('Last Month', lastMonth, currency, false),
+                  _buildStatRow(
+                      'Last Month', lastMonth, currency, false, context),
                   const SizedBox(height: 24),
                   const Divider(),
                   const SizedBox(height: 16),
@@ -103,7 +104,7 @@ class SavedDetailsDialog extends StatelessWidget {
                         style: GoogleFonts.outfit(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimaryLight,
+                          color: theme.textTheme.bodyLarge?.color,
                         ),
                       ),
                       Container(
@@ -145,8 +146,6 @@ class SavedDetailsDialog extends StatelessWidget {
               );
             }),
             const SizedBox(height: 32),
-
-            
             Obx(() {
               final goal = controller.savingsGoal.value;
               final current = controller.moneySavedThisMonth.value *
@@ -164,13 +163,13 @@ class SavedDetailsDialog extends StatelessWidget {
                         children: [
                           Expanded(
                             flex: (progress * 100).toInt(),
-                            child: Container(color: AppColors.primary),
+                            child: Container(color: theme.colorScheme.primary),
                           ),
                           Expanded(
                             flex: ((1 - progress) * 100).toInt(),
                             child: Container(
-                                color: AppColors.textTertiaryLight
-                                    .withValues(alpha: 0.3)),
+                                color:
+                                    theme.disabledColor.withValues(alpha: 0.3)),
                           ),
                         ],
                       ),
@@ -183,30 +182,27 @@ class SavedDetailsDialog extends StatelessWidget {
                       Text('${(progress * 100).toStringAsFixed(0)}% of goal',
                           style: GoogleFonts.outfit(
                               fontSize: 12,
-                              color: AppColors.textSecondaryLight)),
+                              color: theme.textTheme.bodySmall?.color)),
                       Text('Goal: ${goal.toStringAsFixed(0)} $currency',
                           style: GoogleFonts.outfit(
                               fontSize: 12,
-                              color: AppColors.textSecondaryLight)),
+                              color: theme.textTheme.bodySmall?.color)),
                     ],
                   ),
                 ],
               );
             }),
-
             const SizedBox(height: 24),
-
-            
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   Get.back();
-                  Get.toNamed('/analysis'); 
+                  Get.toNamed('/analysis');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -230,15 +226,16 @@ class SavedDetailsDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
             Obx(() => controller.debugLog.value.isNotEmpty
                 ? Container(
                     padding: const EdgeInsets.all(8),
-                    color: Colors.grey[100],
+                    color: theme.cardColor,
                     width: double.infinity,
                     child: Text(
                       controller.debugLog.value,
-                      style: GoogleFonts.robotoMono(fontSize: 10),
+                      style: GoogleFonts.robotoMono(
+                          fontSize: 10,
+                          color: theme.textTheme.bodySmall?.color),
                     ),
                   )
                 : const SizedBox.shrink()),
@@ -248,8 +245,9 @@ class SavedDetailsDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(
-      String label, double amount, String currency, bool isHighlight) {
+  Widget _buildStatRow(String label, double amount, String currency,
+      bool isHighlight, BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -257,7 +255,7 @@ class SavedDetailsDialog extends StatelessWidget {
           label,
           style: GoogleFonts.outfit(
             fontSize: 16,
-            color: AppColors.textSecondaryLight,
+            color: theme.textTheme.bodyMedium?.color,
           ),
         ),
         Text(
@@ -265,8 +263,9 @@ class SavedDetailsDialog extends StatelessWidget {
           style: GoogleFonts.outfit(
             fontSize: isHighlight ? 24 : 18,
             fontWeight: isHighlight ? FontWeight.bold : FontWeight.w500,
-            color:
-                isHighlight ? AppColors.primary : AppColors.textTertiaryLight,
+            color: isHighlight
+                ? theme.colorScheme.primary
+                : theme.textTheme.bodySmall?.color,
           ),
         ),
       ],

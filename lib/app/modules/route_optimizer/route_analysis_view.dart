@@ -8,17 +8,20 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
   const RouteAnalysisView({super.key});
 
   @override
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('Route Analysis',
             style: GoogleFonts.outfit(
-                color: Colors.black, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
+                color: theme.textTheme.titleLarge?.color,
+                fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: Icon(Icons.close, color: theme.iconTheme.color),
           onPressed: () => Get.back(),
         ),
       ),
@@ -32,7 +35,10 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
           if (snapshot.hasError ||
               !snapshot.hasData ||
               snapshot.data!.isEmpty) {
-            return const Center(child: Text('Could not analyze routes.'));
+            return Center(
+                child: Text('Could not analyze routes.',
+                    style:
+                        TextStyle(color: theme.textTheme.bodyMedium?.color)));
           }
 
           final results = snapshot.data!;
@@ -52,6 +58,7 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
               return Card(
                 elevation: 4,
                 margin: const EdgeInsets.only(bottom: 16),
+                color: theme.cardColor,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 child: Padding(
@@ -70,19 +77,29 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
                                 color: AppColors.primary),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_circle, color: Colors.green)
+                            const Icon(Icons.check_circle,
+                                color: AppColors.success)
                         ],
                       ),
                       const Divider(height: 24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildStat(Icons.directions_car,
-                              '${distance.toStringAsFixed(1)} km', 'Distance'),
-                          _buildStat(Icons.access_time,
-                              '${time.toStringAsFixed(0)} min', 'Est. Time'),
-                          _buildStat(Icons.attach_money,
-                              '\$${cost.toStringAsFixed(2)}', 'Est. Fuel'),
+                          _buildStat(
+                              Icons.directions_car,
+                              '${distance.toStringAsFixed(1)} km',
+                              'Distance',
+                              theme),
+                          _buildStat(
+                              Icons.access_time,
+                              '${time.toStringAsFixed(0)} min',
+                              'Est. Time',
+                              theme),
+                          _buildStat(
+                              Icons.attach_money,
+                              '\$${cost.toStringAsFixed(2)}',
+                              'Est. Fuel',
+                              theme),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -91,13 +108,13 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
                         child: ElevatedButton(
                           onPressed: () {
                             controller.optimizationCriteria.value = criteria;
-                            controller
-                                .optimizeRoute(); 
+                            controller.optimizeRoute();
                             Get.back();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                isSelected ? Colors.grey : AppColors.primary,
+                            backgroundColor: isSelected
+                                ? theme.disabledColor
+                                : AppColors.primary,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                           ),
@@ -119,16 +136,21 @@ class RouteAnalysisView extends GetView<RouteOptimizerController> {
     );
   }
 
-  Widget _buildStat(IconData icon, String value, String label) {
+  Widget _buildStat(
+      IconData icon, String value, String label, ThemeData theme) {
     return Column(
       children: [
-        Icon(icon, color: Colors.grey.shade600, size: 20),
+        Icon(icon,
+            color: theme.iconTheme.color?.withValues(alpha: 0.7), size: 20),
         const SizedBox(height: 4),
         Text(value,
-            style:
-                GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
+            style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyLarge?.color)),
         Text(label,
-            style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey)),
+            style: GoogleFonts.outfit(
+                fontSize: 12, color: theme.textTheme.bodySmall?.color)),
       ],
     );
   }

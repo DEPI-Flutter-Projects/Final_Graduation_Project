@@ -34,7 +34,6 @@ class FavoritesController extends GetxController {
         final dateString =
             '${createdAt.day}/${createdAt.month}/${createdAt.year}';
 
-        
         final settings = Get.find<SettingsController>();
         String currencySymbol = settings.currency.value;
         double rate = settings.exchangeRate.value;
@@ -64,8 +63,7 @@ class FavoritesController extends GetxController {
   }
 
   void openRouteDetails(Map<String, dynamic> route) {
-    Get.toNamed(Routes.ROUTE_DETAILS, arguments: route)?.then((_) {
-      
+    Get.toNamed(Routes.routeDetails, arguments: route)?.then((_) {
       loadFavorites();
     });
   }

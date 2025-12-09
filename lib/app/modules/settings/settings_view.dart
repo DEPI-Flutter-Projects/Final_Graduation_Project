@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/theme/app_colors.dart';
+
 import '../../data/services/theme_service.dart';
 import 'settings_controller.dart';
 
@@ -9,180 +9,180 @@ class SettingsView extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimaryLight),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
+        title: Text(
           'Settings',
-          style: TextStyle(
-            color: AppColors.textPrimaryLight,
-            fontSize: 18,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            
-            _buildSectionHeader('Account'),
-            _buildSettingsCard([
-              _buildSettingsTile(
-                Icons.person_outline,
-                'Edit Profile',
-                'Update your name and information',
-                () => controller.editProfile(),
-              ),
-              _buildDivider(),
-              _buildSettingsTile(
-                Icons.lock_outline,
-                'Change Password',
-                'Update your password',
-                () => controller.changePassword(),
-              ),
-              _buildDivider(),
-              _buildSettingsTile(
-                Icons.delete_outline,
-                'Delete Account',
-                'Permanently delete your account',
-                () => controller.deleteAccount(),
-                textColor: AppColors.error,
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-
-            
-            _buildSectionHeader('Appearance'),
-            _buildThemeSelector(),
-            const SizedBox(height: 24),
-
-            _buildSectionHeader('App Preferences'),
-            _buildSettingsCard([
-              _buildDropdownTile(
-                Icons.directions_car_outlined,
-                'Default Transport Mode',
-                controller.defaultTransportMode,
-                ['Car', 'Metro', 'Microbus', 'Walk'],
-                (value) => controller.setDefaultTransportMode(value!),
-              ),
-              _buildDivider(),
-              _buildDropdownTile(
-                Icons.straighten_outlined,
-                'Distance Unit',
-                controller.distanceUnit,
-                ['KM', 'Miles'],
-                (value) => controller.setDistanceUnit(value!),
-              ),
-              _buildDivider(),
-              _buildDropdownTile(
-                Icons.attach_money_outlined,
-                'Currency',
-                controller.currency,
-                ['EGP', 'USD', 'EUR', 'GBP'],
-                (value) => controller.setCurrency(value!),
-              ),
-              _buildDivider(),
-              _buildDropdownTile(
-                Icons.language_outlined,
-                'Language',
-                controller.language,
-                ['English', 'Arabic'],
-                (value) => controller.setLanguage(value!),
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-
-            
-            _buildSectionHeader('Notifications'),
-            _buildSettingsCard([
-              _buildSwitchTile(
-                Icons.route_outlined,
-                'Route Alerts',
-                'Get notified about your routes',
-                controller.routeAlerts,
-                (value) => controller.toggleRouteAlerts(value),
-              ),
-              _buildDivider(),
-              _buildSwitchTile(
-                Icons.savings_outlined,
-                'Savings Notifications',
-                'Updates on money saved',
-                controller.savingsAlerts,
-                (value) => controller.toggleSavingsAlerts(value),
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-
-            
-            _buildSectionHeader('Data & Privacy'),
-            _buildSettingsCard([
-              _buildSettingsTile(
-                Icons.cleaning_services_outlined,
-                'Clear Cache',
-                'Free up storage space',
-                () => controller.clearCache(),
-              ),
-              _buildDivider(),
-              _buildSettingsTile(
-                Icons.privacy_tip_outlined,
-                'Privacy Policy',
-                'View our privacy policy',
-                () => controller.openPrivacyPolicy(),
-              ),
-            ]),
-
-            const SizedBox(height: 24),
-
-            
-            _buildSectionHeader('About'),
-            _buildSettingsCard([
-              _buildInfoTile(
-                Icons.info_outline,
-                'App Version',
-                '1.0.0',
-              ),
-              _buildDivider(),
-              _buildSettingsTile(
-                Icons.description_outlined,
-                'Terms of Service',
-                'Read our terms',
-                () => controller.openTerms(),
-              ),
-              _buildDivider(),
-              _buildSettingsTile(
-                Icons.support_agent_outlined,
-                'Contact Support',
-                'Get help from our team',
-                () => controller.contactSupport(),
-              ),
-            ]),
-
-            const SizedBox(height: 32),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader('Account', theme),
+              _buildSettingsCard([
+                _buildSettingsTile(
+                  Icons.person_outline,
+                  'Edit Profile',
+                  'Update your name and information',
+                  () => controller.editProfile(),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSettingsTile(
+                  Icons.lock_outline,
+                  'Change Password',
+                  'Update your password',
+                  () => controller.changePassword(),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSettingsTile(
+                  Icons.delete_outline,
+                  'Delete Account',
+                  'Permanently delete your account',
+                  () => controller.deleteAccount(),
+                  theme,
+                  textColor: theme.colorScheme.error,
+                ),
+              ], theme),
+              const SizedBox(height: 24),
+              _buildSectionHeader('Appearance', theme),
+              _buildThemeSelector(theme),
+              const SizedBox(height: 24),
+              _buildSectionHeader('App Preferences', theme),
+              _buildSettingsCard([
+                _buildDropdownTile(
+                  Icons.directions_car_outlined,
+                  'Default Transport Mode',
+                  controller.defaultTransportMode,
+                  ['Car', 'Metro', 'Microbus', 'Walk'],
+                  (value) => controller.setDefaultTransportMode(value!),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildDropdownTile(
+                  Icons.straighten_outlined,
+                  'Distance Unit',
+                  controller.distanceUnit,
+                  ['KM', 'Miles'],
+                  (value) => controller.setDistanceUnit(value!),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildDropdownTile(
+                  Icons.attach_money_outlined,
+                  'Currency',
+                  controller.currency,
+                  ['EGP', 'USD', 'EUR', 'GBP'],
+                  (value) => controller.setCurrency(value!),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildDropdownTile(
+                  Icons.language_outlined,
+                  'Language',
+                  controller.language,
+                  ['English', 'Arabic'],
+                  (value) => controller.setLanguage(value!),
+                  theme,
+                ),
+              ], theme),
+              const SizedBox(height: 24),
+              _buildSectionHeader('Notifications', theme),
+              _buildSettingsCard([
+                _buildSwitchTile(
+                  Icons.route_outlined,
+                  'Route Alerts',
+                  'Get notified about your routes',
+                  controller.routeAlerts,
+                  (value) => controller.toggleRouteAlerts(value),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSwitchTile(
+                  Icons.savings_outlined,
+                  'Savings Notifications',
+                  'Updates on money saved',
+                  controller.savingsAlerts,
+                  (value) => controller.toggleSavingsAlerts(value),
+                  theme,
+                ),
+              ], theme),
+              const SizedBox(height: 24),
+              _buildSectionHeader('Data & Privacy', theme),
+              _buildSettingsCard([
+                _buildSettingsTile(
+                  Icons.cleaning_services_outlined,
+                  'Clear Cache',
+                  'Free up storage space',
+                  () => controller.clearCache(),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSettingsTile(
+                  Icons.privacy_tip_outlined,
+                  'Privacy Policy',
+                  'View our privacy policy',
+                  () => controller.openPrivacyPolicy(),
+                  theme,
+                ),
+              ], theme),
+              const SizedBox(height: 24),
+              _buildSectionHeader('About', theme),
+              _buildSettingsCard([
+                _buildInfoTile(
+                  Icons.info_outline,
+                  'App Version',
+                  '1.0.0',
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSettingsTile(
+                  Icons.description_outlined,
+                  'Terms of Service',
+                  'Read our terms',
+                  () => controller.openTerms(),
+                  theme,
+                ),
+                _buildDivider(theme),
+                _buildSettingsTile(
+                  Icons.support_agent_outlined,
+                  'Contact Support',
+                  'Get help from our team',
+                  () => controller.contactSupport(),
+                  theme,
+                ),
+              ], theme),
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildThemeSelector() {
+  Widget _buildThemeSelector(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Theme.of(Get.context!).cardTheme.color,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(Get.context!).dividerColor),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Obx(() {
         final currentMode = ThemeService.to.themeMode;
@@ -193,18 +193,21 @@ class SettingsView extends GetView<SettingsController> {
               label: 'System',
               isSelected: currentMode == ThemeMode.system,
               onTap: () => ThemeService.to.setTheme(ThemeMode.system),
+              theme: theme,
             ),
             _buildThemeOption(
               icon: Icons.light_mode_rounded,
               label: 'Light',
               isSelected: currentMode == ThemeMode.light,
               onTap: () => ThemeService.to.setTheme(ThemeMode.light),
+              theme: theme,
             ),
             _buildThemeOption(
               icon: Icons.dark_mode_rounded,
               label: 'Dark',
               isSelected: currentMode == ThemeMode.dark,
               onTap: () => ThemeService.to.setTheme(ThemeMode.dark),
+              theme: theme,
             ),
           ],
         );
@@ -217,6 +220,7 @@ class SettingsView extends GetView<SettingsController> {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required ThemeData theme,
   }) {
     return Expanded(
       child: GestureDetector(
@@ -226,7 +230,7 @@ class SettingsView extends GetView<SettingsController> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.accent.withValues(alpha: 0.15)
+                ? theme.colorScheme.primary.withValues(alpha: 0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
@@ -235,21 +239,17 @@ class SettingsView extends GetView<SettingsController> {
               Icon(
                 icon,
                 color: isSelected
-                    ? AppColors.accent
-                    : Theme.of(Get.context!)
-                        .iconTheme
-                        .color!
-                        .withValues(alpha: 0.5),
+                    ? theme.colorScheme.primary
+                    : theme.iconTheme.color?.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 4),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
+                style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected
-                      ? AppColors.accent
-                      : Theme.of(Get.context!).textTheme.bodySmall!.color,
+                      ? theme.colorScheme.primary
+                      : theme.textTheme.bodySmall?.color,
                 ),
               ),
             ],
@@ -259,31 +259,30 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 14,
+        style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
-          color: AppColors.textSecondaryLight,
+          color: theme.textTheme.bodySmall?.color, // Secondary text color
           letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildSettingsCard(List<Widget> children) {
+  Widget _buildSettingsCard(List<Widget> children, ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
+            color: theme.shadowColor.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -295,29 +294,26 @@ class SettingsView extends GetView<SettingsController> {
     IconData icon,
     String title,
     String subtitle,
-    VoidCallback onTap, {
+    VoidCallback onTap,
+    ThemeData theme, {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Icon(icon, color: textColor ?? AppColors.textPrimaryLight),
+      leading: Icon(icon, color: textColor ?? theme.iconTheme.color),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 15,
+        style: theme.textTheme.bodyLarge?.copyWith(
           fontWeight: FontWeight.w600,
-          color: textColor ?? AppColors.textPrimaryLight,
+          color: textColor ?? theme.textTheme.bodyLarge?.color,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondaryLight,
-        ),
+        style: theme.textTheme.bodySmall,
       ),
-      trailing: const Icon(
+      trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.textTertiaryLight,
+        color: theme.disabledColor,
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -330,27 +326,23 @@ class SettingsView extends GetView<SettingsController> {
     String subtitle,
     RxBool value,
     Function(bool) onChanged,
+    ThemeData theme,
   ) {
     return Obx(() => SwitchListTile(
-          secondary: Icon(icon, color: AppColors.textPrimaryLight),
+          secondary: Icon(icon, color: theme.iconTheme.color),
           title: Text(
             title,
-            style: const TextStyle(
-              fontSize: 15,
+            style: theme.textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimaryLight,
             ),
           ),
           subtitle: Text(
             subtitle,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.textSecondaryLight,
-            ),
+            style: theme.textTheme.bodySmall,
           ),
           value: value.value,
           onChanged: onChanged,
-          activeTrackColor: AppColors.primary,
+          activeTrackColor: theme.colorScheme.primary,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
         ));
@@ -362,35 +354,34 @@ class SettingsView extends GetView<SettingsController> {
     RxString currentValue,
     List<String> options,
     Function(String?) onChanged,
+    ThemeData theme,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.textPrimaryLight),
+          Icon(icon, color: theme.iconTheme.color),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 15,
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimaryLight,
               ),
             ),
           ),
           Obx(() => DropdownButton<String>(
                 value: currentValue.value,
+                dropdownColor: theme.cardColor,
                 underline: const SizedBox(),
-                icon:
-                    const Icon(Icons.arrow_drop_down, color: AppColors.primary),
+                icon: Icon(Icons.arrow_drop_down,
+                    color: theme.colorScheme.primary),
                 items: options.map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
                       value,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -403,29 +394,27 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _buildInfoTile(IconData icon, String title, String value) {
+  Widget _buildInfoTile(
+      IconData icon, String title, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.textPrimaryLight),
+          Icon(icon, color: theme.iconTheme.color),
           const SizedBox(width: 16),
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 15,
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimaryLight,
               ),
             ),
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
-              color: AppColors.textSecondaryLight,
+              color: theme.textTheme.bodySmall?.color,
             ),
           ),
         ],
@@ -433,12 +422,12 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _buildDivider() {
-    return const Divider(
+  Widget _buildDivider(ThemeData theme) {
+    return Divider(
       height: 1,
       thickness: 1,
       indent: 56,
-      color: AppColors.divider,
+      color: theme.dividerColor,
     );
   }
 }

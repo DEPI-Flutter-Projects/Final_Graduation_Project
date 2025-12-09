@@ -13,72 +13,73 @@ class AddVehicleView extends GetView<GarageController> {
   Widget build(BuildContext context) {
     return GetBuilder<GarageController>(
       initState: (_) => controller.fetchBrands(),
-      builder: (_) => Scaffold(
-        backgroundColor: Colors.grey.shade50,
-        appBar: AppBar(
-          title: Obx(() => Text(
-                controller.isEditing ? 'Edit Vehicle' : 'Add New Vehicle',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.black87),
-              )),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
-            onPressed: () {
-              if (controller.currentStep.value > 0 && !controller.isEditing) {
-                controller.previousStep();
-              } else {
-                Get.back();
-              }
-            },
-          ),
-        ),
-        body: Column(
-          children: [
-            _buildCustomStepper(),
-            Expanded(
-              child: PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: controller.pageController,
-                children: [
-                  _buildBrandStep(),
-                  _buildModelStep(),
-                  _buildDetailsStep(),
-                ],
-              ),
+      builder: (_) {
+        final theme = Get.theme;
+        return Scaffold(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: Obx(() => Text(
+                  controller.isEditing ? 'Edit Vehicle' : 'Add New Vehicle',
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                )),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon:
+                  Icon(Icons.arrow_back_ios_new, color: theme.iconTheme.color),
+              onPressed: () {
+                if (controller.currentStep.value > 0 && !controller.isEditing) {
+                  controller.previousStep();
+                } else {
+                  Get.back();
+                }
+              },
             ),
-          ],
-        ),
-        bottomNavigationBar: _buildBottomBar(),
-      ),
+          ),
+          body: Column(
+            children: [
+              _buildCustomStepper(theme),
+              Expanded(
+                child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: controller.pageController,
+                  children: [
+                    _buildBrandStep(theme),
+                    _buildModelStep(theme),
+                    _buildDetailsStep(theme),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          bottomNavigationBar: _buildBottomBar(theme),
+        );
+      },
     );
   }
 
-  Widget _buildCustomStepper() {
-    
+  Widget _buildCustomStepper(ThemeData theme) {
     if (controller.isEditing) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: theme.shadowColor.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'Edit Vehicle Details',
-            style: TextStyle(
-              fontSize: 18,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
             ),
           ),
         ),
@@ -88,10 +89,10 @@ class AddVehicleView extends GetView<GarageController> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: theme.shadowColor.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -100,21 +101,22 @@ class AddVehicleView extends GetView<GarageController> {
       child: Obx(() {
         return Row(
           children: [
-            _buildStepIndicator(0, 'Make', Icons.directions_car),
-            _buildStepConnector(0),
-            _buildStepIndicator(1, 'Model', Icons.tune),
-            _buildStepConnector(1),
-            _buildStepIndicator(2, 'Details', Icons.edit_note),
+            _buildStepIndicator(0, 'Make', Icons.directions_car, theme),
+            _buildStepConnector(0, theme),
+            _buildStepIndicator(1, 'Model', Icons.tune, theme),
+            _buildStepConnector(1, theme),
+            _buildStepIndicator(2, 'Details', Icons.edit_note, theme),
           ],
         );
       }),
     );
   }
 
-  Widget _buildStepIndicator(int step, String label, IconData icon) {
+  Widget _buildStepIndicator(
+      int step, String label, IconData icon, ThemeData theme) {
     final isActive = controller.currentStep.value >= step;
     final isCurrent = controller.currentStep.value == step;
-    final color = isActive ? AppColors.primary : Colors.grey.shade300;
+    final color = isActive ? theme.colorScheme.primary : theme.disabledColor;
 
     return Expanded(
       child: Column(
@@ -123,7 +125,7 @@ class AddVehicleView extends GetView<GarageController> {
             duration: const Duration(milliseconds: 300),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: isCurrent ? AppColors.primary : Colors.transparent,
+              color: isCurrent ? theme.colorScheme.primary : Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
                 color: color,
@@ -132,7 +134,7 @@ class AddVehicleView extends GetView<GarageController> {
               boxShadow: isCurrent
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                         blurRadius: 8,
                         spreadRadius: 2,
                       )
@@ -143,17 +145,20 @@ class AddVehicleView extends GetView<GarageController> {
               icon,
               size: 20,
               color: isCurrent
-                  ? Colors.white
-                  : (isActive ? AppColors.primary : Colors.grey.shade400),
+                  ? theme.colorScheme.onPrimary
+                  : (isActive
+                      ? theme.colorScheme.primary
+                      : theme.disabledColor),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
+            style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: isCurrent ? FontWeight.bold : FontWeight.w500,
-              color: isActive ? AppColors.textPrimaryLight : Colors.grey,
+              color: isActive
+                  ? theme.textTheme.bodyMedium?.color
+                  : theme.disabledColor,
             ),
           ),
         ],
@@ -161,35 +166,39 @@ class AddVehicleView extends GetView<GarageController> {
     );
   }
 
-  Widget _buildStepConnector(int step) {
+  Widget _buildStepConnector(int step, ThemeData theme) {
     final isActive = controller.currentStep.value > step;
     return Expanded(
       child: Container(
         height: 2,
-        color: isActive ? AppColors.primary : Colors.grey.shade200,
-        margin: const EdgeInsets.only(bottom: 20), 
+        color: isActive ? theme.colorScheme.primary : theme.dividerColor,
+        margin: const EdgeInsets.only(bottom: 20),
       ),
     );
   }
 
-  Widget _buildBrandStep() {
+  Widget _buildBrandStep(ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Select Car Brand',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           TextField(
             onChanged: controller.filterBrands,
+            style: theme.textTheme.bodyMedium,
             decoration: InputDecoration(
               hintText: 'Search brands...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle:
+                  theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+              prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: theme.cardColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -224,18 +233,18 @@ class AddVehicleView extends GetView<GarageController> {
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primary.withValues(alpha: 0.05)
-                            : Colors.white,
+                            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                            : theme.cardColor,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.primary
+                              ? theme.colorScheme.primary
                               : Colors.transparent,
                           width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: theme.shadowColor.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -253,14 +262,14 @@ class AddVehicleView extends GetView<GarageController> {
                               placeholder: (context, url) => Icon(
                                 Icons.directions_car_filled,
                                 size: 32,
-                                color: Colors.grey.shade300,
+                                color: theme.disabledColor,
                               ),
                               errorWidget: (context, url, error) => Icon(
                                 Icons.directions_car_filled,
                                 size: 32,
                                 color: isSelected
-                                    ? AppColors.primary
-                                    : Colors.grey.shade400,
+                                    ? theme.colorScheme.primary
+                                    : theme.disabledColor,
                               ),
                             )
                           else
@@ -268,18 +277,17 @@ class AddVehicleView extends GetView<GarageController> {
                               Icons.directions_car_filled,
                               size: 32,
                               color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.grey.shade400,
+                                  ? theme.colorScheme.primary
+                                  : theme.disabledColor,
                             ),
                           const SizedBox(height: 8),
                           Text(
                             brand['name'],
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.black87,
+                                  ? theme.colorScheme.primary
+                                  : theme.textTheme.bodyLarge?.color,
                             ),
                           ),
                         ],
@@ -295,24 +303,28 @@ class AddVehicleView extends GetView<GarageController> {
     );
   }
 
-  Widget _buildModelStep() {
+  Widget _buildModelStep(ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Select Model',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           TextField(
             onChanged: controller.filterModels,
+            style: theme.textTheme.bodyMedium,
             decoration: InputDecoration(
               hintText: 'Search models...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintStyle:
+                  theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+              prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: theme.cardColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -339,18 +351,18 @@ class AddVehicleView extends GetView<GarageController> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primary.withValues(alpha: 0.05)
-                            : Colors.white,
+                            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                            : theme.cardColor,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.primary
+                              ? theme.colorScheme.primary
                               : Colors.transparent,
                           width: 2,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: theme.shadowColor.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -362,15 +374,15 @@ class AddVehicleView extends GetView<GarageController> {
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.primary
-                                  : Colors.grey.shade100,
+                                  ? theme.colorScheme.primary
+                                  : theme.disabledColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
                               Icons.directions_car,
                               color: isSelected
-                                  ? Colors.white
-                                  : Colors.grey.shade500,
+                                  ? theme.colorScheme.onPrimary
+                                  : theme.disabledColor,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -380,28 +392,26 @@ class AddVehicleView extends GetView<GarageController> {
                               children: [
                                 Text(
                                   model['name'],
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: isSelected
-                                        ? AppColors.primary
-                                        : Colors.black87,
+                                        ? theme.colorScheme.primary
+                                        : theme.textTheme.bodyLarge?.color,
                                   ),
                                 ),
                                 if (model['year_start'] != null)
                                   Text(
                                     '${model['year_start']} - ${model['year_end'] ?? 'Present'}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade500,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.disabledColor,
                                     ),
                                   ),
                               ],
                             ),
                           ),
                           if (isSelected)
-                            const Icon(Icons.check_circle,
-                                color: AppColors.primary),
+                            Icon(Icons.check_circle,
+                                color: theme.colorScheme.primary),
                         ],
                       ),
                     ),
@@ -415,7 +425,7 @@ class AddVehicleView extends GetView<GarageController> {
     );
   }
 
-  Widget _buildDetailsStep() {
+  Widget _buildDetailsStep(ThemeData theme) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Form(
@@ -448,7 +458,7 @@ class AddVehicleView extends GetView<GarageController> {
                               value: year, child: Text(year.toString()));
                         }).toList(),
                         onChanged: (val) => controller.selectedYear.value = val,
-                        validator: (value) => null, 
+                        validator: (value) => null,
                       ),
                       if (hasError)
                         Padding(
@@ -481,12 +491,12 @@ class AddVehicleView extends GetView<GarageController> {
               }),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Label',
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87),
+                  color: theme.textTheme.bodyLarge?.color),
             ),
             const SizedBox(height: 12),
             SingleChildScrollView(
@@ -506,12 +516,12 @@ class AddVehicleView extends GetView<GarageController> {
                               horizontal: 20, vertical: 10),
                           decoration: BoxDecoration(
                             color:
-                                isSelected ? AppColors.primary : Colors.white,
+                                isSelected ? theme.cardColor : theme.cardColor,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected
                                   ? AppColors.primary
-                                  : Colors.grey.shade300,
+                                  : theme.dividerColor,
                             ),
                             boxShadow: isSelected
                                 ? [
@@ -529,7 +539,7 @@ class AddVehicleView extends GetView<GarageController> {
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
-                                  : Colors.grey.shade700,
+                                  : theme.textTheme.bodyMedium?.color,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -552,9 +562,9 @@ class AddVehicleView extends GetView<GarageController> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: theme.dividerColor),
               ),
               child: Row(
                 children: [
@@ -598,6 +608,7 @@ class AddVehicleView extends GetView<GarageController> {
   }
 
   Widget _buildFuelTypeSelector() {
+    final theme = Get.theme;
     return Obx(() {
       final hasError = controller.showValidationErrors.value &&
           controller.selectedFuelType.value == null;
@@ -605,14 +616,13 @@ class AddVehicleView extends GetView<GarageController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Wrap(
-            spacing: 8, 
-            runSpacing: 8, 
+            spacing: 8,
+            runSpacing: 8,
             children: controller.fuelTypes.map((type) {
               final isSelected = controller.selectedFuelType.value == type;
               final displayType = type == 'CNG' ? 'Natural Gas' : type;
               final price = controller.fuelPrices[type];
 
-              
               Color typeColor;
               IconData typeIcon;
               if (type.contains('95')) {
@@ -635,8 +645,6 @@ class AddVehicleView extends GetView<GarageController> {
                 typeIcon = Icons.local_gas_station;
               }
 
-              
-              
               final itemWidth = (Get.width - 40 - 16) / 3;
 
               return GestureDetector(
@@ -644,17 +652,17 @@ class AddVehicleView extends GetView<GarageController> {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   width: itemWidth,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 8), 
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? typeColor : Colors.white,
-                    borderRadius: BorderRadius.circular(12), 
+                    color: isSelected ? typeColor : theme.cardColor,
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
                           ? typeColor
                           : (hasError
-                              ? Colors.red.shade300
-                              : Colors.grey.shade200),
+                              ? theme.colorScheme.error.withValues(alpha: 0.5)
+                              : theme.dividerColor),
                       width: hasError ? 1.5 : (isSelected ? 1.5 : 1),
                     ),
                     boxShadow: isSelected
@@ -679,16 +687,18 @@ class AddVehicleView extends GetView<GarageController> {
                       Icon(
                         typeIcon,
                         color: isSelected ? Colors.white : typeColor,
-                        size: 20, 
+                        size: 20,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         displayType,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black87,
+                          color: isSelected
+                              ? Colors.white
+                              : theme.textTheme.bodyMedium?.color,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12, 
+                          fontSize: 12,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -701,8 +711,8 @@ class AddVehicleView extends GetView<GarageController> {
                         style: TextStyle(
                           color: isSelected
                               ? Colors.white.withValues(alpha: 0.9)
-                              : Colors.grey.shade600,
-                          fontSize: 10, 
+                              : theme.textTheme.bodySmall?.color,
+                          fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -729,19 +739,21 @@ class AddVehicleView extends GetView<GarageController> {
   }
 
   Widget _buildDetailSection(String title, IconData icon, Widget content) {
+    final theme = Get.theme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 18, color: Colors.grey.shade600),
+            Icon(icon,
+                size: 18, color: theme.iconTheme.color?.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey,
+                color: theme.textTheme.bodySmall?.color,
               ),
             ),
           ],
@@ -756,7 +768,7 @@ class AddVehicleView extends GetView<GarageController> {
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Get.theme.cardColor,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -769,7 +781,7 @@ class AddVehicleView extends GetView<GarageController> {
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(ThemeData theme) {
     return Container(
       padding: EdgeInsets.only(
         left: 20,
@@ -778,10 +790,10 @@ class AddVehicleView extends GetView<GarageController> {
         top: 20,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: theme.shadowColor.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -800,8 +812,8 @@ class AddVehicleView extends GetView<GarageController> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2D3142),
-              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: theme.colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -810,9 +822,10 @@ class AddVehicleView extends GetView<GarageController> {
             ),
             child: Text(
               isLastStep || controller.isEditing ? 'Save Vehicle' : 'Next Step',
-              style: const TextStyle(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onPrimary,
               ),
             ),
           ),

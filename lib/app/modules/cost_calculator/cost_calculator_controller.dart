@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_snackbars.dart';
-import '../../core/values/pricing_constants.dart';
+import '../../data/services/pricing_service.dart';
 import '../../data/services/vehicle_service.dart';
 
 class CostCalculatorController extends GetxController {
@@ -14,15 +14,14 @@ class CostCalculatorController extends GetxController {
 
   final VehicleService _vehicleService = Get.find<VehicleService>();
 
-  
-  final double petrolPrice = 13.0; 
-  final double dieselPrice = 11.5; 
-  final double electricPrice = 2.0; 
+  final double petrolPrice = 13.0;
+  final double dieselPrice = 11.5;
+  final double electricPrice = 2.0;
 
   @override
   void onInit() {
     super.onInit();
-    
+
     ever(_vehicleService.userVehicles, (_) => _updateSelectedVehicle());
     _updateSelectedVehicle();
   }
@@ -30,28 +29,21 @@ class CostCalculatorController extends GetxController {
   void _updateSelectedVehicle() {
     final vehicles = _vehicleService.userVehicles;
 
-    
     if (vehicles.isEmpty) {
       selectedVehicle.value = null;
       return;
     }
 
-    
     if (selectedVehicle.value != null) {
       final currentId = selectedVehicle.value!['id'];
-      
-      
+
       if (currentId is int) {
         final exists = vehicles.any((v) => v['id'] == currentId);
         if (!exists) {
-          
           _selectDefaultOrFirst();
         }
       }
-      
-      
     } else {
-      
       _selectDefaultOrFirst();
     }
   }
@@ -72,7 +64,6 @@ class CostCalculatorController extends GetxController {
     distanceController.dispose();
     super.onClose();
   }
-  
 
   void _setVehicleFromResponse(Map<String, dynamic> data) {
     final model = data['car_models'];
@@ -80,7 +71,7 @@ class CostCalculatorController extends GetxController {
     selectedVehicle.value = {
       'id': data['id'],
       'name': '${brand['name']} ${model['name']}',
-      'efficiency': model['avg_fuel_consumption'] ?? 10.0, 
+      'efficiency': model['avg_fuel_consumption'] ?? 10.0,
       'fuel': model['fuel_type'] ?? 'Petrol',
       'year': data['year'],
     };
@@ -225,8 +216,6 @@ class CostCalculatorController extends GetxController {
               ],
             ),
             const SizedBox(height: 24),
-
-            
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -245,7 +234,6 @@ class CostCalculatorController extends GetxController {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
             const Text(
               'Smart Suggestions',
@@ -255,7 +243,6 @@ class CostCalculatorController extends GetxController {
                   color: AppColors.textSecondaryLight),
             ),
             const SizedBox(height: 12),
-
             _buildSuggestionTile(
               name: 'Economic Sedan',
               desc: 'e.g., Nissan Sunny, Renault Logan',
@@ -333,7 +320,6 @@ class CostCalculatorController extends GetxController {
         ],
       ),
       onTap: () {
-        
         Get.dialog(
           AlertDialog(
             title: const Text('Select Fuel Type'),
@@ -366,8 +352,8 @@ class CostCalculatorController extends GetxController {
           'fuel': fuelType,
           'year': 'N/A',
         };
-        Get.back(); 
-        Get.back(); 
+        Get.back();
+        Get.back();
         if (distanceController.text.isNotEmpty) calculateCosts();
       },
     );
@@ -390,65 +376,76 @@ class CostCalculatorController extends GetxController {
       return;
     }
 
-    
-
-    
     double carCostVal = 0;
     String carDetails = 'Estimated (Generic Car)';
+    final priceService = Get.find<PricingService>();
+
     if (selectedVehicle.value != null) {
       final efficiency =
-          (selectedVehicle.value!['efficiency'] as num).toDouble(); 
+          (selectedVehicle.value!['efficiency'] as num).toDouble();
       final fuelType = selectedVehicle.value!['fuel'].toString();
 
       double price = 0.0;
+
       if (fuelType.contains('95')) {
-        price = PricingConstants.gasoline95;
+        price = priceService.gasoline95.value;
       } else if (fuelType.contains('92')) {
-        price = PricingConstants.gasoline92;
-      } else if (fuelType.contains('80')) {
-        price = PricingConstants.gasoline80;
-      } else if (fuelType.contains('Diesel')) {
-        price = PricingConstants.diesel;
+        price = priceService.gasoline92.value;
+      } else if (fuelType.contains('Diesel') || fuelType.contains('Sular')) {
+        price = priceService.diesel.value;
       } else if (fuelType.contains('Natural Gas') || fuelType.contains('CNG')) {
-        price = PricingConstants.naturalGas;
+        price = priceService.cng.value;
       } else {
-        price = PricingConstants.gasoline92;
+        price = priceService.gasoline92.value;
       }
       carCostVal = (distance / 100) * efficiency * price;
       carDetails = 'Based on your car';
     } else {
-      carCostVal = (distance / 100) * 10.0 * PricingConstants.gasoline92;
+      // Default to 92 octane
+      carCostVal = (distance / 100) * 10.0 * priceService.gasoline92.value;
     }
-    final carDurationVal = (distance * 1.5).round(); 
+    final carDurationVal = (distance * 1.5).round();
 
-    
+    // Calculate Metro Cost using PricingService
     double metroCostVal = 0;
     int stations = (distance / 1.5).ceil();
     if (distance > 0 && stations < 1) stations = 1;
-    if (stations <= PricingConstants.metroTier1Limit) {
-      metroCostVal = PricingConstants.metroTier1Price.toDouble();
-    } else if (stations <= PricingConstants.metroTier2Limit) {
-      metroCostVal = PricingConstants.metroTier2Price.toDouble();
-    } else if (stations <= PricingConstants.metroTier3Limit) {
-      metroCostVal = PricingConstants.metroTier3Price.toDouble();
+
+    // Use dynamic tier limits (currently hardcoded here but prices are dynamic)
+    // In a full refactor, tier limits should also be in PricingService or Config
+    if (stations <= 9) {
+      metroCostVal = priceService.metroTier1.value;
+    } else if (stations <= 16) {
+      metroCostVal = priceService.metroTier2.value;
+    } else if (stations <= 23) {
+      metroCostVal = priceService.metroTier3.value;
     } else {
-      metroCostVal = PricingConstants.metroTier4Price.toDouble();
+      metroCostVal = priceService.metroTier4.value;
     }
-    final metroDurationVal = ((distance * 2.0) + 5).round(); 
+    final metroDurationVal = ((distance * 2.0) + 5).round();
 
-    
+    // Calculate Microbus Cost
     double microbusCostVal = 0;
-    double totalTripCost = (distance / 100) *
-        PricingConstants.microbusAvgConsumptionNaturalGas *
-        PricingConstants.naturalGas;
-    microbusCostVal = totalTripCost / 2;
-    if (microbusCostVal < 1.0) microbusCostVal = 1.0;
-    final microbusDurationVal = (distance * 2.0).round(); 
+    // Estimated consumption and gas price
+    // Assuming 12m3/100km for microbus on natural gas
+    double totalTripCost = (distance / 100) * 12.0 * priceService.cng.value;
+    microbusCostVal = totalTripCost /
+        14; // Divide by average passengers? Or is this cost per person?
+    // The original logic was totalTripCost / 2 which seems high for per person.
+    // Let's use the service's estimated fares for simplicity if available, or stick to this logic but using dynamic price.
 
-    
-    
-    
-    
+    // Better approach: Use average fare based on distance (Short/Medium/Long)
+    if (distance < 10) {
+      microbusCostVal = priceService.microbusShort.value;
+    } else if (distance < 30) {
+      microbusCostVal = priceService.microbusMedium.value;
+    } else {
+      microbusCostVal = priceService.microbusLong.value;
+    }
+
+    if (microbusCostVal < 2.0) microbusCostVal = 2.0; // Minimum fare
+    final microbusDurationVal = (distance * 2.0).round();
+
     const double timeValuePerMin = 0.75;
 
     final carScore = carCostVal + (carDurationVal * timeValuePerMin);
@@ -456,7 +453,6 @@ class CostCalculatorController extends GetxController {
     final microbusScore =
         microbusCostVal + (microbusDurationVal * timeValuePerMin);
 
-    
     final scores = {
       'Car': carScore,
       'Metro': metroScore,
@@ -480,7 +476,6 @@ class CostCalculatorController extends GetxController {
     final fastestMode =
         durations.entries.reduce((a, b) => a.value < b.value ? a : b).key;
 
-    
     final List<Map<String, dynamic>> results = [
       {
         'mode': 'Car',
@@ -517,11 +512,9 @@ class CostCalculatorController extends GetxController {
       },
     ];
 
-    
     results
         .sort((a, b) => (a['score'] as double).compareTo(b['score'] as double));
 
-    
     for (var result in results) {
       final mode = result['mode'];
       final List<String> badges = [];

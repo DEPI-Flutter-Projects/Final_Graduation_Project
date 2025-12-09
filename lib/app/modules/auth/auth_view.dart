@@ -17,18 +17,13 @@ class AuthView extends GetView<AuthController> {
     return Scaffold(
       body: Stack(
         children: [
-          
           _buildAnimatedBackground(),
-
-          
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
               color: Colors.black.withValues(alpha: 0.2),
             ),
           ),
-
-          
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -36,34 +31,19 @@ class AuthView extends GetView<AuthController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  
                   _buildHeader(context),
-
                   const SizedBox(height: 40),
-
-                  
                   _buildGlassForm(context),
-
                   const SizedBox(height: 30),
-
-                  
                   _buildDivider(),
-
                   const SizedBox(height: 20),
-
-                  
                   _buildSocialButtons(),
-
                   const SizedBox(height: 30),
-
-                  
                   _buildFooterToggle(),
                 ],
               ),
             ),
           ),
-
-          
           _buildThemeToggle(),
         ],
       ),
@@ -93,7 +73,6 @@ class AuthView extends GetView<AuthController> {
                   ),
                 ),
                 child: Icon(
-                  
                   isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                   color: isDark ? Colors.orange : Colors.white,
                 ),
@@ -115,13 +94,13 @@ class AuthView extends GetView<AuthController> {
             end: Alignment.bottomRight,
             colors: isDark
                 ? [
-                    const Color(0xFF1A237E), 
+                    const Color(0xFF1A237E),
                     const Color(0xFF0D47A1),
                     const Color(0xFF01579B),
-                    const Color(0xFF006064), 
+                    const Color(0xFF006064),
                   ]
                 : [
-                    const Color(0xFFE3F2FD), 
+                    const Color(0xFFE3F2FD),
                     const Color(0xFFBBDEFB),
                     const Color(0xFF90CAF9),
                     const Color(0xFF64B5F6),
@@ -227,7 +206,6 @@ class AuthView extends GetView<AuthController> {
           key: controller.formKey,
           child: Column(
             children: [
-              
               if (!controller.isLoginMode.value)
                 _buildTextField(
                   controller: controller.nameController,
@@ -239,13 +217,10 @@ class AuthView extends GetView<AuthController> {
                     .animate(target: controller.shakeTrigger.value > 0 ? 1 : 0)
                     .shake(
                         hz: 8, curve: Curves.easeInOutCubic, duration: 500.ms)
-                    .animate() 
+                    .animate()
                     .fadeIn()
                     .scaleY(begin: 0, end: 1, alignment: Alignment.topCenter),
-
               if (!controller.isLoginMode.value) const SizedBox(height: 16),
-
-              
               _buildTextField(
                 controller: controller.emailController,
                 label: 'Email',
@@ -257,10 +232,7 @@ class AuthView extends GetView<AuthController> {
               )
                   .animate(target: controller.shakeTrigger.value > 0 ? 1 : 0)
                   .shake(hz: 8, curve: Curves.easeInOutCubic, duration: 500.ms),
-
               const SizedBox(height: 16),
-
-              
               Obx(() => _buildTextField(
                         controller: controller.passwordController,
                         label: 'Password',
@@ -280,15 +252,12 @@ class AuthView extends GetView<AuthController> {
                       ))
                   .animate(target: controller.shakeTrigger.value > 0 ? 1 : 0)
                   .shake(hz: 8, curve: Curves.easeInOutCubic, duration: 500.ms),
-
               const SizedBox(height: 12),
-
-              
               if (controller.isLoginMode.value)
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => Get.toNamed(Routes.FORGOT_PASSWORD),
+                    onPressed: () => Get.toNamed(Routes.forgotPassword),
                     child: Text(
                       'Forgot Password?',
                       style: GoogleFonts.outfit(
@@ -298,10 +267,7 @@ class AuthView extends GetView<AuthController> {
                     ),
                   ),
                 ),
-
               const SizedBox(height: 24),
-
-              
               SizedBox(
                 width: double.infinity,
                 height: 56,

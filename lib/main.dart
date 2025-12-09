@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'app/routes/app_pages.dart';
@@ -26,6 +24,8 @@ void main() async {
   await Hive.openBox('profile');
   await Hive.openBox('settings');
   await Hive.openBox('route_optimizer');
+  await Hive.openBox('pricing');
+  await Hive.openBox('vehicle_cache');
 
   await BackgroundService.init();
 
@@ -46,7 +46,7 @@ class ElMoshwarApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeService.themeMode,
       initialBinding: InitialBinding(),
-      initialRoute: AppPages.INITIAL,
+      initialRoute: AppPages.initial,
       getPages: AppPages.routes,
     );
   }

@@ -42,7 +42,6 @@ class RouteDetailsView extends GetView<RouteDetailsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -75,7 +74,7 @@ class RouteDetailsView extends GetView<RouteDetailsController> {
                   displaySaved =
                       '$currency ${(saved * rate).toStringAsFixed(2)}';
                 } catch (e) {
-                  
+                  // Ignored
                 }
 
                 return Column(
@@ -145,10 +144,7 @@ class RouteDetailsView extends GetView<RouteDetailsController> {
                 );
               }),
             ).animate().fadeIn().slideY(begin: 0.2, end: 0),
-
             const SizedBox(height: 32),
-
-            
             const Text(
               'Route',
               style: TextStyle(
@@ -195,7 +191,6 @@ class RouteDetailsView extends GetView<RouteDetailsController> {
                 ],
               ),
             ).animate().fadeIn().slideY(begin: 0.2, end: 0, delay: 100.ms),
-
             if (controller.route.value['mode'] == 'Car' ||
                 controller.route.value['vehicle_name'] != null) ...[
               const SizedBox(height: 32),
@@ -257,10 +252,7 @@ class RouteDetailsView extends GetView<RouteDetailsController> {
                 ),
               ).animate().fadeIn().slideY(begin: 0.2, end: 0, delay: 150.ms),
             ],
-
             const SizedBox(height: 32),
-
-            
             const Text(
               'Actions',
               style: TextStyle(

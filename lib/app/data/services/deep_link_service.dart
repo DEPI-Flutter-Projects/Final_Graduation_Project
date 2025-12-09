@@ -31,11 +31,9 @@ class DeepLinkService extends GetxService {
       final mode = uri.queryParameters['mode'];
 
       if (from != null && to != null) {
-        
-        
         Future.delayed(const Duration(milliseconds: 500), () {
           Get.toNamed(
-            Routes.ROUTE_PLANNER,
+            Routes.routePlanner,
             arguments: {
               'from': from,
               'to': to,

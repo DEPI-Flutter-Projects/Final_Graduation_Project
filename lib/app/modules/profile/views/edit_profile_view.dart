@@ -39,7 +39,6 @@ class EditProfileView extends GetView<ProfileController> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            
             Center(
               child: Stack(
                 children: [
@@ -83,14 +82,12 @@ class EditProfileView extends GetView<ProfileController> {
               ),
             ),
             const SizedBox(height: 32),
-
             _buildTextField(
               label: 'Full Name',
               controller: controller.nameController,
               icon: Icons.person_outline,
             ),
             const SizedBox(height: 20),
-
             _buildTextField(
               label: 'Phone Number',
               controller: controller.phoneController,
@@ -98,8 +95,6 @@ class EditProfileView extends GetView<ProfileController> {
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 20),
-
-            
             _buildTextField(
               label: 'Country',
               controller: TextEditingController(text: 'Egypt'),
@@ -108,8 +103,6 @@ class EditProfileView extends GetView<ProfileController> {
               enabled: false,
             ),
             const SizedBox(height: 20),
-
-            
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -123,9 +116,10 @@ class EditProfileView extends GetView<ProfileController> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _isValidGovernorate(controller.locationController.text)
-                      ? controller.locationController.text
-                      : null,
+                  initialValue:
+                      _isValidGovernorate(controller.locationController.text)
+                          ? controller.locationController.text
+                          : null,
                   items: _egyptGovernorates.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,

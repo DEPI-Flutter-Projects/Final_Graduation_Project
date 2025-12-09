@@ -18,15 +18,13 @@ class ProfileController extends GetxController {
   final userLocation = ''.obs;
   final userAvatarUrl = ''.obs;
 
-  
   final totalTrips = 0.obs;
   final totalSavings = 0.0.obs;
   final kmTraveled = 0.obs;
   final avgRating = 5.0.obs;
-  final co2Saved = 0.0.obs; 
-  final timeSaved = 0.0.obs; 
+  final co2Saved = 0.0.obs;
+  final timeSaved = 0.0.obs;
 
-  
   final level = 1.obs;
   final levelName = 'Beginner'.obs;
   final currentXp = 0.obs;
@@ -40,7 +38,6 @@ class ProfileController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   late Box _profileBox;
 
-  
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final locationController = TextEditingController();
@@ -172,7 +169,6 @@ class ProfileController extends GetxController {
         kmTraveled.value = (data['km_traveled'] ?? 0).toInt();
         avgRating.value = (data['avg_rating'] ?? 5.0).toDouble();
 
-        
         currentXp.value = data['xp'] ?? 0;
         currentStreak.value = data['current_streak'] ?? 0;
         if (data['last_spin_date'] != null) {
@@ -183,12 +179,11 @@ class ProfileController extends GetxController {
       _updateTextControllers();
       _calculateLevelProgress();
       await _loadBadges();
-      await _checkAndUnlockBadges(); 
-      await _loadDailyChallenges(); 
-      await _calculateEnvironmentalImpact(user.id); 
+      await _checkAndUnlockBadges();
+      await _loadDailyChallenges();
+      await _calculateEnvironmentalImpact(user.id);
       await _cacheProfileData();
 
-      
       _checkDailySpinNotification();
     } catch (e) {
       debugPrint('Error loading profile: $e');
@@ -208,21 +203,17 @@ class ProfileController extends GetxController {
         final mode = route['transport_mode']?.toString().toLowerCase() ?? '';
         final distance = (route['distance_km'] ?? 0) as num;
 
-        
         if (mode.contains('metro') || mode.contains('train')) {
-          totalCo2Saved += distance * 0.09; 
+          totalCo2Saved += distance * 0.09;
         } else if (mode.contains('bus') || mode.contains('microbus')) {
-          totalCo2Saved += distance * 0.06; 
+          totalCo2Saved += distance * 0.06;
         } else if (mode.contains('walk') || mode.contains('cycl')) {
-          totalCo2Saved += distance * 0.12; 
+          totalCo2Saved += distance * 0.12;
         }
       }
 
       co2Saved.value = totalCo2Saved;
 
-      
-      
-      
       timeSaved.value = response
               .where(
                   (r) => r['transport_mode'].toString().toLowerCase() != 'car')
@@ -247,14 +238,9 @@ class ProfileController extends GetxController {
   }
 
   void _calculateLevelProgress() {
-    
-    
-    
-
     int xp = currentXp.value;
     int lvl = 1;
 
-    
     lvl = (xp ~/ 500) + 1;
     if (lvl > 50) lvl = 50;
 
@@ -334,7 +320,6 @@ class ProfileController extends GetxController {
         case 'eco':
           if (co2Saved.value >= req) unlocked = true;
           break;
-        
       }
 
       if (unlocked) {
@@ -344,7 +329,6 @@ class ProfileController extends GetxController {
             'badge_id': badge['id'],
           });
 
-          
           await addXp(badge['xp_reward'],
               reason: 'Badge Unlocked: ${badge['name']}');
 
@@ -356,13 +340,13 @@ class ProfileController extends GetxController {
 
           newBadgeUnlocked = true;
         } catch (e) {
-          
+          // Ignored
         }
       }
     }
 
     if (newBadgeUnlocked) {
-      await _loadBadges(); 
+      await _loadBadges();
     }
   }
 
@@ -371,7 +355,6 @@ class ProfileController extends GetxController {
     if (user == null) return;
 
     try {
-      
       final today = DateTime.now().toIso8601String().split('T')[0];
       final existingChallenges = await Supabase.instance.client
           .from('user_challenges')
@@ -385,7 +368,6 @@ class ProfileController extends GetxController {
         return;
       }
 
-      
       final allDailyChallenges = await Supabase.instance.client
           .from('challenges')
           .select()
@@ -403,7 +385,6 @@ class ProfileController extends GetxController {
         available.removeAt(index);
       }
 
-      
       for (var challenge in selectedChallenges) {
         final res = await Supabase.instance.client
             .from('user_challenges')
@@ -439,14 +420,13 @@ class ProfileController extends GetxController {
 
         if (newProgress >= target) {
           newProgress = target;
-          
+
           await Supabase.instance.client.from('user_challenges').update({
             'progress': newProgress,
             'is_completed': true,
             'completed_at': DateTime.now().toIso8601String(),
           }).eq('id', userChallenge['id']);
 
-          
           await addXp(challenge['xp_reward'],
               reason: 'Challenge Completed: ${challenge['description']}');
 
@@ -456,7 +436,6 @@ class ProfileController extends GetxController {
             type: 'challenge',
           );
         } else {
-          
           await Supabase.instance.client.from('user_challenges').update({
             'progress': newProgress,
           }).eq('id', userChallenge['id']);
@@ -464,7 +443,6 @@ class ProfileController extends GetxController {
       }
     }
 
-    
     await _loadDailyChallenges();
   }
 
@@ -475,7 +453,6 @@ class ProfileController extends GetxController {
     final oldLevel = level.value;
     currentXp.value += amount;
 
-    
     await Supabase.instance.client.from('profiles').update({
       'xp': currentXp.value,
     }).eq('id', user.id);
@@ -534,24 +511,22 @@ class ProfileController extends GetxController {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return 0;
 
-    
     final rand = Random();
     int reward = 0;
     int roll = rand.nextInt(100);
 
     if (roll < 50) {
-      reward = 50; 
+      reward = 50;
     } else if (roll < 80) {
-      reward = 100; 
+      reward = 100;
     } else if (roll < 95) {
-      reward = 200; 
+      reward = 200;
     } else {
-      reward = 500; 
+      reward = 500;
     }
 
     lastSpinDate.value = DateTime.now();
 
-    
     await Supabase.instance.client.from('profiles').update({
       'last_spin_date': DateTime.now().toIso8601String(),
     }).eq('id', user.id);
@@ -573,7 +548,7 @@ class ProfileController extends GetxController {
 
   Future<void> logout() async {
     await Supabase.instance.client.auth.signOut();
-    Get.offAllNamed(Routes.ONBOARDING);
+    Get.offAllNamed(Routes.onboarding);
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -656,34 +631,28 @@ class ProfileController extends GetxController {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
 
-    
     totalTrips.value++;
     kmTraveled.value += distanceKm.toInt();
     totalSavings.value += savings;
 
-    
     await Supabase.instance.client.from('profiles').update({
       'total_trips': totalTrips.value,
       'km_traveled': kmTraveled.value,
       'total_savings': totalSavings.value,
     }).eq('id', user.id);
 
-    
     if (savings > 0) {
       await addXp(savings.toInt(), reason: 'Savings: ${savings.toInt()} EGP');
     }
 
-    
     await updateChallengeProgress('trips', 1);
     await updateChallengeProgress('distance', distanceKm.toInt());
     if (savings > 0) {
       await updateChallengeProgress('savings', savings.toInt());
     }
 
-    
     await _checkAndUnlockBadges();
 
-    
     await _calculateEnvironmentalImpact(user.id);
   }
 

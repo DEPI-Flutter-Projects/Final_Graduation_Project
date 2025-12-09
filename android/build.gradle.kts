@@ -17,6 +17,14 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+
+    // Fix for "different roots" error on Windows when project and pub cache are on different drives
+    project.pluginManager.withPlugin("com.android.library") {
+        val extension = project.extensions.getByType<com.android.build.gradle.LibraryExtension>()
+        extension.testOptions.unitTests.all {
+            it.enabled = false
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {

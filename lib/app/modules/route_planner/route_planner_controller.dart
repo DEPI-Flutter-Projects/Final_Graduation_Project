@@ -6,7 +6,7 @@ import 'package:geocoding/geocoding.dart' as geo;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/app_snackbars.dart';
-import '../../core/values/pricing_constants.dart';
+import '../../data/services/pricing_service.dart';
 import '../../data/services/vehicle_service.dart';
 import '../map/location_picker_view.dart';
 import '../map/map_controller.dart';
@@ -32,7 +32,7 @@ class RoutePlannerController extends GetxController {
   }
 
   final stops = <TextEditingController>[].obs;
-  final stopCoordinates = <int, LatLng>{}.obs; 
+  final stopCoordinates = <int, LatLng>{}.obs;
 
   final routeResult = Rxn<Map<String, dynamic>>();
   final isCalculating = false.obs;
@@ -40,34 +40,29 @@ class RoutePlannerController extends GetxController {
   LatLng? startCoordinates;
   LatLng? endCoordinates;
 
-  
-  
-  final RxString selectedTransportMode = 'Car'.obs; 
+  final RxString selectedTransportMode = 'Car'.obs;
   final selectedVehicle = Rxn<Map<String, dynamic>>();
 
   final VehicleService _vehicleService = Get.find<VehicleService>();
+  final PricingService _pricingService = Get.find<PricingService>();
   RxList<Map<String, dynamic>> get userVehicles => _vehicleService.userVehicles;
 
-  
-  final RxString metroPreference =
-      'Fastest'.obs; 
+  final RxString metroPreference = 'Fastest'.obs;
 
   final ShareService _shareService = Get.put(ShareService());
 
   @override
   void onInit() {
     super.onInit();
-    
+
     if (Get.isRegistered<SettingsController>()) {
       selectedTransportMode.value =
           Get.find<SettingsController>().defaultTransportMode.value;
     }
 
-    
     ever(_vehicleService.userVehicles, (_) => _updateSelectedVehicle());
     _updateSelectedVehicle();
 
-    
     if (Get.arguments != null && Get.arguments is Map) {
       final args = Get.arguments as Map;
       if (args.containsKey('from') && args.containsKey('to')) {
@@ -77,7 +72,6 @@ class RoutePlannerController extends GetxController {
           selectedTransportMode.value = args['mode'];
         }
 
-        
         Future.delayed(const Duration(milliseconds: 300), () {
           _geocodeLocations();
         });
@@ -93,7 +87,6 @@ class RoutePlannerController extends GetxController {
         selectedTransportMode.value = args['mode'];
       }
 
-      
       Future.delayed(const Duration(milliseconds: 300), () {
         _geocodeLocations();
       });
@@ -102,7 +95,6 @@ class RoutePlannerController extends GetxController {
 
   void _updateSelectedVehicle() {
     if (selectedVehicle.value != null) {
-      
       final exists = _vehicleService.userVehicles
           .any((v) => v['id'] == selectedVehicle.value!['id']);
       if (!exists) {
@@ -212,28 +204,22 @@ class RoutePlannerController extends GetxController {
       Future<void> Function(Map<String, dynamic>) action) async {
     if (routeResult.value == null) return;
 
-    
     final user = Supabase.instance.client.auth.currentUser;
     final userName = user?.userMetadata?['full_name'] ?? 'El-Moshwar User';
 
-    
     List<LatLng> points = [];
     if (routeResult.value!['points'] is List<LatLng>) {
       points = routeResult.value!['points'];
     } else {
-      
       if (startCoordinates != null) points.add(startCoordinates!);
       if (endCoordinates != null) points.add(endCoordinates!);
     }
 
-    
     String? carModel;
     if (selectedVehicle.value != null) {
-      
       if (selectedVehicle.value!.containsKey('name')) {
         carModel = selectedVehicle.value!['name'];
       } else {
-        
         final brand = selectedVehicle.value!['car_brands']?['name'] ?? '';
         final model = selectedVehicle.value!['car_models']?['name'] ?? '';
         final year = selectedVehicle.value!['year'] ?? '';
@@ -264,19 +250,17 @@ class RoutePlannerController extends GetxController {
   }
 
   void _setVehicleFromResponse(Map<String, dynamic> data) {
-    
     if (data.containsKey('car_models')) {
       final model = data['car_models'];
       final brand = model['car_brands'];
       selectedVehicle.value = {
         'id': data['id'],
         'name': '${brand['name']} ${model['name']}',
-        'efficiency': model['avg_fuel_consumption'] ?? 10.0, 
+        'efficiency': model['avg_fuel_consumption'] ?? 10.0,
         'fuel': model['fuel_type'] ?? 'Petrol',
         'year': data['year'],
       };
     } else {
-      
       selectedVehicle.value = data;
     }
   }
@@ -346,7 +330,7 @@ class RoutePlannerController extends GetxController {
                       onTap: () {
                         _setVehicleFromResponse(v);
                         Get.back();
-                        
+
                         if (routeResult.value != null) calculateRoute();
                       },
                     );
@@ -361,11 +345,7 @@ class RoutePlannerController extends GetxController {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Get.back();
-                      Get.toNamed('/garage'); 
-                      
-                      
-                      
-                      
+                      Get.toNamed('/garage');
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Add New Vehicle'),
@@ -425,8 +405,6 @@ class RoutePlannerController extends GetxController {
                 ],
               ),
               const SizedBox(height: 24),
-
-              
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -445,7 +423,6 @@ class RoutePlannerController extends GetxController {
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
               const Text(
                 'Smart Suggestions',
@@ -455,7 +432,6 @@ class RoutePlannerController extends GetxController {
                     color: AppColors.textSecondaryLight),
               ),
               const SizedBox(height: 12),
-
               _buildSuggestionTile(
                 name: 'Economic Sedan',
                 desc: 'e.g., Nissan Sunny, Renault Logan',
@@ -534,7 +510,6 @@ class RoutePlannerController extends GetxController {
         ],
       ),
       onTap: () {
-        
         Get.dialog(
           AlertDialog(
             title: const Text('Select Fuel Type'),
@@ -567,8 +542,8 @@ class RoutePlannerController extends GetxController {
           'fuel': fuelType,
           'year': 'N/A',
         };
-        Get.back(); 
-        Get.back(); 
+        Get.back();
+        Get.back();
         if (routeResult.value != null) calculateRoute();
       },
     );
@@ -594,7 +569,6 @@ class RoutePlannerController extends GetxController {
         }
       }
 
-      
       if (startCoordinates != null && endCoordinates != null) {
         calculateRoute();
       }
@@ -614,11 +588,10 @@ class RoutePlannerController extends GetxController {
     }
     super.onClose();
   }
-  
 
   void setTransportMode(String mode) {
     selectedTransportMode.value = mode;
-    
+
     routeResult.value = null;
   }
 
@@ -633,7 +606,7 @@ class RoutePlannerController extends GetxController {
       stops[index].dispose();
       stops.removeAt(index);
       stopCoordinates.remove(index);
-      
+
       for (int i = index + 1; i <= stops.length; i++) {
         if (stopCoordinates.containsKey(i)) {
           stopCoordinates[i - 1] = stopCoordinates[i]!;
@@ -693,7 +666,6 @@ class RoutePlannerController extends GetxController {
   DateTime? _lastLocationRequestTime;
 
   Future<void> useCurrentLocation() async {
-    
     if (isLocating.value) return;
     if (_lastLocationRequestTime != null &&
         DateTime.now().difference(_lastLocationRequestTime!) <
@@ -727,7 +699,6 @@ class RoutePlannerController extends GetxController {
         startCoordinates =
             LatLng(locationData.latitude!, locationData.longitude!);
 
-        
         try {
           List<geo.Placemark> placemarks = await geo.placemarkFromCoordinates(
             locationData.latitude!,
@@ -782,7 +753,6 @@ class RoutePlannerController extends GetxController {
   }
 
   Future<void> calculateRoute() async {
-    
     if (isCalculating.value) return;
 
     if (startLocationController.text.isEmpty ||
@@ -798,23 +768,17 @@ class RoutePlannerController extends GetxController {
       return;
     }
 
-    
     final currentHash = _generateRouteHash();
     if (currentHash == _lastCalculatedRouteHash) {
-      
-      
-      
       return;
     }
 
     isCalculating.value = true;
 
     try {
-      
       double totalDistanceKm = 0;
       LatLng previousPoint = startCoordinates!;
 
-      
       for (int i = 0; i < stops.length; i++) {
         if (stopCoordinates.containsKey(i)) {
           final stopPoint = stopCoordinates[i]!;
@@ -825,112 +789,91 @@ class RoutePlannerController extends GetxController {
         }
       }
 
-      
       totalDistanceKm += const Distance()
               .as(LengthUnit.Meter, previousPoint, endCoordinates!) /
           1000;
 
-      
       double durationMin = 0;
       double cost = 0;
 
       if (selectedTransportMode.value == 'Car') {
-        
         durationMin = (totalDistanceKm / 40) * 60;
 
         if (selectedVehicle.value != null) {
-          final efficiency = (selectedVehicle.value!['efficiency'] as num)
-              .toDouble(); 
+          final efficiency =
+              (selectedVehicle.value!['efficiency'] as num).toDouble();
           final fuelType = selectedVehicle.value!['fuel'].toString();
 
           double price = 0.0;
+          final allPrices = _pricingService.allPrices;
 
-          
-          if (_vehicleService.fuelPrices.containsKey(fuelType)) {
-            price = _vehicleService.fuelPrices[fuelType]!;
+          if (allPrices.containsKey(fuelType)) {
+            price = allPrices[fuelType]!;
           } else {
-            
             if (fuelType.contains('95')) {
-              price = PricingConstants.gasoline95;
+              price = _pricingService.gasoline95.value;
             } else if (fuelType.contains('92')) {
-              price = PricingConstants.gasoline92;
+              price = _pricingService.gasoline92.value;
             } else if (fuelType.contains('80')) {
-              price = PricingConstants.gasoline80;
+              price = _pricingService.gasoline80.value;
             } else if (fuelType.contains('Diesel')) {
-              price = PricingConstants.diesel;
+              price = _pricingService.diesel.value;
             } else if (fuelType.contains('Natural Gas') ||
                 fuelType.contains('CNG')) {
-              price = PricingConstants.naturalGas;
+              price = _pricingService.naturalGas.value;
             } else {
-              price = PricingConstants.gasoline92; 
+              price = _pricingService.gasoline92.value;
             }
           }
 
           cost = (totalDistanceKm / 100) * efficiency * price;
         } else {
-          
-          cost = (totalDistanceKm / 100) * 10.0 * PricingConstants.gasoline92;
+          cost =
+              (totalDistanceKm / 100) * 10.0 * _pricingService.gasoline92.value;
         }
       } else if (selectedTransportMode.value == 'Metro') {
-        
-        
         durationMin = (totalDistanceKm * 3) + 7;
 
-        
         int stations = (totalDistanceKm / 1.5).ceil();
         if (metroPreference.value == 'Least Stations') {
-          stations = (stations * 0.8).ceil(); 
+          stations = (stations * 0.8).ceil();
           durationMin *= 0.9;
         }
 
-        
         if (totalDistanceKm > 0 && stations < 1) stations = 1;
 
-        if (stations <= PricingConstants.metroTier1Limit) {
-          cost = PricingConstants.metroTier1Price.toDouble();
-        } else if (stations <= PricingConstants.metroTier2Limit) {
-          cost = PricingConstants.metroTier2Price.toDouble();
-        } else if (stations <= PricingConstants.metroTier3Limit) {
-          cost = PricingConstants.metroTier3Price.toDouble();
+        if (stations <= _pricingService.metroTier1Limit.value) {
+          cost = _pricingService.metroTier1Price.value.toDouble();
+        } else if (stations <= _pricingService.metroTier2Limit.value) {
+          cost = _pricingService.metroTier2Price.value.toDouble();
+        } else if (stations <= _pricingService.metroTier3Limit.value) {
+          cost = _pricingService.metroTier3Price.value.toDouble();
         } else {
-          cost = PricingConstants.metroTier4Price.toDouble();
+          cost = _pricingService.metroTier4Price.value.toDouble();
         }
       } else {
-        
-        durationMin = (totalDistanceKm / 30) * 60; 
-
-        
-        
-        
-        
-        
+        durationMin = (totalDistanceKm / 30) * 60;
 
         double totalTripCost = (totalDistanceKm / 100) *
-            PricingConstants.microbusAvgConsumptionNaturalGas *
-            PricingConstants.naturalGas;
+            _pricingService.microbusAvgConsumptionNaturalGas *
+            _pricingService.naturalGas.value;
 
-        
         cost = totalTripCost / 2;
 
-        if (cost < 1.0) cost = 1.0; 
+        if (cost < 1.0) cost = 1.0;
       }
 
-      
       double savings = 0;
       if (selectedTransportMode.value != 'Car') {
-        
-        
         double carCost =
-            (totalDistanceKm / 100) * 10.0 * PricingConstants.gasoline92;
+            (totalDistanceKm / 100) * 10.0 * _pricingService.gasoline92.value;
         if (cost < carCost) {
           savings = carCost - cost;
         }
       }
 
-      
       final settings = Get.find<SettingsController>();
 
-      
       String distanceStr;
       double displayDistance = totalDistanceKm;
       if (settings.distanceUnit.value == 'Miles') {
@@ -940,7 +883,6 @@ class RoutePlannerController extends GetxController {
         distanceStr = '${totalDistanceKm.toStringAsFixed(1)} km';
       }
 
-      
       String costStr;
       String savedStr;
       double displayCost = cost;
@@ -966,19 +908,16 @@ class RoutePlannerController extends GetxController {
         'raw_duration': durationMin,
       };
 
-      
       if (Get.isRegistered<MapController>()) {
         final mapController = Get.find<MapController>();
         mapController.setRoute(startCoordinates!, endCoordinates!);
       }
 
-      
       if (selectedVehicle.value == null &&
           selectedTransportMode.value == 'Car') {
         _selectDefaultOrFirst();
       }
 
-      
       String? vehicleName;
       String? fuelType;
       double? fuelPrice;
@@ -987,12 +926,10 @@ class RoutePlannerController extends GetxController {
         vehicleName = selectedVehicle.value!['name'];
         fuelType = selectedVehicle.value!['fuel'];
       } else if (selectedTransportMode.value == 'Car') {
-        
         vehicleName = 'Standard Car';
         fuelType = 'Petrol (92)';
       }
 
-      
       await _saveRouteToHistory(
         startAddress: startLocationController.text,
         endAddress: endLocationController.text,
@@ -1006,7 +943,6 @@ class RoutePlannerController extends GetxController {
         fuelPrice: fuelPrice,
       );
 
-      
       _lastCalculatedRouteHash = currentHash;
     } finally {
       isCalculating.value = false;
@@ -1016,15 +952,11 @@ class RoutePlannerController extends GetxController {
   Future<void> startNavigation() async {
     if (routeResult.value == null) return;
 
-    
     if (Get.isRegistered<MainLayoutController>()) {
       Get.find<MainLayoutController>().changePage(2);
     } else {
-      
       Get.toNamed('/map_view');
     }
-
-    AppSnackbars.showSuccess('Navigation Started', 'Viewing route on map');
   }
 
   Future<void> _saveRouteToHistory({
@@ -1045,37 +977,28 @@ class RoutePlannerController extends GetxController {
 
       await Supabase.instance.client.from('user_routes').insert({
         'user_id': userId,
-
-        
         'from_location': startAddress,
         'to_location': endAddress,
         'distance_km': distance,
         'transport_mode': mode,
         'cost': cost,
         'duration_minutes': duration.round(),
-
-        
         'start_address': startAddress,
         'end_address': endAddress,
         'total_distance_km': distance,
         'total_duration_min': duration.round(),
         'estimated_cost': cost,
         'saved_amount': savedAmount,
-
-        
         'vehicle_name': vehicleName,
         'fuel_type': fuelType,
         'fuel_price': fuelPrice,
-
         'created_at': DateTime.now().toUtc().toIso8601String(),
       });
 
-      
       if (Get.isRegistered<HomeController>()) {
         Get.find<HomeController>().loadRecentRoutes();
       }
 
-      
       if (Get.isRegistered<ProfileController>()) {
         final profile = Get.find<ProfileController>();
         await profile.updateStats(
@@ -1086,7 +1009,6 @@ class RoutePlannerController extends GetxController {
       }
     } catch (e) {
       debugPrint('Error saving route history: $e');
-      
     }
   }
 }

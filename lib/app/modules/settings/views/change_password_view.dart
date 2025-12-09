@@ -14,11 +14,11 @@ class ChangePasswordView extends GetView<SettingsController> {
     final confirmPasswordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    
+    // Shake animation controllers
     final shakeCurrent = 0.obs;
     final shakeNew = 0.obs;
 
-    
+    // Listen for errors to trigger shake
     ever(controller.currentPasswordError, (error) {
       if (error.isNotEmpty) shakeCurrent.value++;
     });
@@ -26,23 +26,23 @@ class ChangePasswordView extends GetView<SettingsController> {
       if (error.isNotEmpty) shakeNew.value++;
     });
 
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.cardColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Change Password',
-          style: TextStyle(
-            color: AppColors.textPrimaryLight,
-            fontSize: 20,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimaryLight, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: theme.iconTheme.color, size: 20),
           onPressed: () => Get.back(),
         ),
       ),
@@ -51,7 +51,7 @@ class ChangePasswordView extends GetView<SettingsController> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            
+            // Header Icon
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -67,15 +67,15 @@ class ChangePasswordView extends GetView<SettingsController> {
 
             const SizedBox(height: 32),
 
-            
+            // Form Card
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: theme.shadowColor.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -86,26 +86,25 @@ class ChangePasswordView extends GetView<SettingsController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Secure your account',
-                      style: TextStyle(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimaryLight,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Create a strong password to keep your account safe.',
-                      style: TextStyle(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
-                        color: AppColors.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 24),
 
-                    
+                    // Current Password
                     Obx(() => _buildPasswordField(
+                          context: context,
                           controller: currentPasswordController,
                           label: 'Current Password',
                           isVisible: controller.isCurrentPasswordVisible,
@@ -129,8 +128,9 @@ class ChangePasswordView extends GetView<SettingsController> {
 
                     const SizedBox(height: 20),
 
-                    
+                    // New Password
                     Obx(() => _buildPasswordField(
+                          context: context,
                           controller: newPasswordController,
                           label: 'New Password',
                           isVisible: controller.isNewPasswordVisible,
@@ -156,8 +156,9 @@ class ChangePasswordView extends GetView<SettingsController> {
 
                     const SizedBox(height: 20),
 
-                    
+                    // Confirm Password
                     _buildPasswordField(
+                      context: context,
                       controller: confirmPasswordController,
                       label: 'Confirm Password',
                       isVisible: controller.isConfirmPasswordVisible,
@@ -170,7 +171,7 @@ class ChangePasswordView extends GetView<SettingsController> {
                     ),
                     const SizedBox(height: 32),
 
-                    
+                    // Submit Button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -183,9 +184,6 @@ class ChangePasswordView extends GetView<SettingsController> {
                                         currentPasswordController.text,
                                         newPasswordController.text,
                                       );
-                                    } else {
-                                      
-                                      
                                     }
                                   },
                             style: ElevatedButton.styleFrom(
@@ -225,20 +223,26 @@ class ChangePasswordView extends GetView<SettingsController> {
   }
 
   Widget _buildPasswordField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required RxBool isVisible,
     required String? Function(String?) validator,
     String? errorText,
   }) {
+    final theme = Theme.of(context);
     return Obx(() => TextFormField(
           controller: controller,
           obscureText: !isVisible.value,
           validator: validator,
-          style: const TextStyle(fontWeight: FontWeight.w500),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: const TextStyle(color: AppColors.textSecondaryLight),
+            labelStyle: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: 14,
+            ),
             errorText: errorText,
             prefixIcon: const Icon(Icons.lock_outline_rounded,
                 color: AppColors.primary),
@@ -247,17 +251,17 @@ class ChangePasswordView extends GetView<SettingsController> {
                 isVisible.value
                     ? Icons.visibility_off_rounded
                     : Icons.visibility_rounded,
-                color: AppColors.textSecondaryLight,
+                color: theme.iconTheme.color,
               ),
               onPressed: () => isVisible.toggle(),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -268,7 +272,7 @@ class ChangePasswordView extends GetView<SettingsController> {
               borderSide: BorderSide(color: AppColors.error, width: 1),
             ),
             filled: true,
-            fillColor: AppColors.backgroundLight,
+            fillColor: theme.scaffoldBackgroundColor,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           ),
@@ -287,11 +291,11 @@ class _SuccessDialogState extends State<SuccessDialog> {
   @override
   void initState() {
     super.initState();
-    
+    // Auto close after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        Get.back(); 
-        Get.back(); 
+        Get.back(); // Close dialog
+        Get.back(); // Go back to settings
       }
     });
   }
@@ -304,8 +308,15 @@ class _SuccessDialogState extends State<SuccessDialog> {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -332,21 +343,20 @@ class _SuccessDialogState extends State<SuccessDialog> {
                 .then()
                 .shake(duration: 400.ms, hz: 2, curve: Curves.easeInOut),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Success!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
             ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Password changed successfully',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: 16,
+                  ),
             ).animate().fadeIn(delay: 500.ms).moveY(begin: 20, end: 0),
           ],
         ),

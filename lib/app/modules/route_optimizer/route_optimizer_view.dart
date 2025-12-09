@@ -12,36 +12,38 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimaryLight),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: Theme.of(context).iconTheme.color),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Route Optimizer',
           style: GoogleFonts.outfit(
-            color: AppColors.textPrimaryLight,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline, color: AppColors.primary),
+            icon: Icon(Icons.info_outline,
+                color: Theme.of(context).iconTheme.color),
             onPressed: () => _showHelpDialog(context),
             tooltip: 'Help',
           ),
           IconButton(
-            icon: const Icon(Icons.history, color: AppColors.primary),
+            icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
             onPressed: () => _showHistoryDialog(context),
             tooltip: 'History',
           ),
           IconButton(
-            icon: const Icon(Icons.map_outlined, color: AppColors.primary),
+            icon: Icon(Icons.map_outlined,
+                color: Theme.of(context).iconTheme.color),
             onPressed: controller.viewRouteOnMap,
             tooltip: 'View Route on Map',
           ),
@@ -49,7 +51,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
       ),
       body: Column(
         children: [
-          
           Container(
             height: 60,
             margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -71,7 +72,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                 _buildShortcutChip(
                   icon: Icons.add,
                   label: 'Add Shortcut',
-                  color: Colors.grey,
+                  color: Theme.of(context).disabledColor,
                   onTap: () => _showEditShortcutDialog(null),
                   isOutlined: true,
                 ),
@@ -104,7 +105,8 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                           style: GoogleFonts.outfit(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade600,
+                            color:
+                                Theme.of(context).textTheme.bodyMedium?.color,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -112,7 +114,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                           'Or select a shortcut above',
                           style: GoogleFonts.outfit(
                             fontSize: 14,
-                            color: Colors.grey.shade400,
+                            color: Theme.of(context).disabledColor,
                           ),
                         ),
                       ],
@@ -132,7 +134,9 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       return Material(
                         elevation: 12,
                         color: Colors.transparent,
-                        shadowColor: Colors.black.withValues(alpha: 0.3),
+                        shadowColor: Theme.of(context)
+                            .shadowColor
+                            .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
                         child: child,
                       );
@@ -147,18 +151,17 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
               );
             }),
           ),
-
-          
           SafeArea(
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(32)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color:
+                        Theme.of(context).shadowColor.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, -5),
                   ),
@@ -167,7 +170,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -306,6 +308,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
       required VoidCallback onTap,
       VoidCallback? onLongPress,
       bool isOutlined = false}) {
+    final theme = Theme.of(Get.context!);
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
@@ -316,19 +319,24 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
           color: isOutlined ? Colors.transparent : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isOutlined
-                ? Colors.grey.shade300
-                : color.withValues(alpha: 0.2),
+            color:
+                isOutlined ? theme.dividerColor : color.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isOutlined ? Colors.grey : color),
+            Icon(icon,
+                size: 18,
+                color: isOutlined
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.7)
+                    : color),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isOutlined ? Colors.grey.shade700 : color,
+                color: isOutlined
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
+                    : color,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
@@ -342,6 +350,9 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
   Widget _buildCriteriaOption(String label) {
     return Obx(() {
       final isSelected = controller.optimizationCriteria.value == label;
+      final theme = Theme.of(Get.context!);
+      const selectedColor = AppColors.accent;
+
       return GestureDetector(
         onTap: () => controller.optimizationCriteria.value = label,
         child: AnimatedContainer(
@@ -349,17 +360,21 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.1)
+                ? selectedColor.withValues(alpha: 0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppColors.primary : Colors.grey.shade300,
+              color: isSelected
+                  ? selectedColor
+                  : theme.dividerColor.withValues(alpha: 0.5),
             ),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? AppColors.primary : Colors.grey,
+              color: isSelected
+                  ? selectedColor
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.9),
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 12,
             ),
@@ -374,11 +389,11 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
       key: ValueKey(stop.id),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -417,11 +432,17 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Icon(Icons.edit, size: 14, color: Colors.grey.shade400),
+                  Icon(Icons.edit,
+                      size: 14,
+                      color: Theme.of(context)
+                          .iconTheme
+                          .color
+                          ?.withValues(alpha: 0.5)),
                 ],
               ),
             ),
@@ -431,157 +452,158 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                 if (stop.address != null && stop.address!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
-                    child: Row(
-                      children: [
-                        Icon(Icons.location_on,
-                            size: 12, color: Colors.grey.shade400),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            stop.address!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade500),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: GestureDetector(
-                      onTap: () async {
-                        final result =
-                            await controller.pickLocationForShortcut();
-                        if (result != null) {
-                          controller.updateStopDetails(
-                            stop.id,
-                            address: result['address'],
-                            lat: result['coordinates'].latitude,
-                            lng: result['coordinates'].longitude,
-                          );
-                        }
-                      },
-                      child: const Row(
+                    child: InkWell(
+                      onTap: () => controller.pickLocationForStop(stop.id),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Row(
                         children: [
-                          Icon(Icons.add_location_alt,
-                              size: 12, color: AppColors.primary),
-                          SizedBox(width: 4),
-                          Text(
-                            'Set Location',
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600),
+                          Icon(Icons.location_on,
+                              size: 12, color: Theme.of(context).disabledColor),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              stop.address!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withValues(alpha: 0.7)),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                if (stop.timeConstraint != null)
+                  )
+                else
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Row(
-                      children: [
-                        Icon(Icons.access_time,
-                            size: 12, color: Colors.orange.shade400),
-                        const SizedBox(width: 4),
-                        Text(
-                          stop.timeConstraint!.format(context),
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.orange.shade700,
-                              fontWeight: FontWeight.w500),
+                    padding: const EdgeInsets.only(top: 8),
+                    child: InkWell(
+                      onTap: () => controller.pickLocationForStop(stop.id),
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.accent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppColors.accent.withValues(alpha: 0.3),
+                          ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.add_location_alt,
+                                size: 16, color: AppColors.accent),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Set Location',
+                              style: GoogleFonts.outfit(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.accent),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      // Priority Button
+                      InkWell(
+                        onTap: () {
+                          final currentIndex = stop.priority.index;
+                          final nextIndex =
+                              (currentIndex + 1) % StopPriority.values.length;
+                          final nextPriority = StopPriority.values[nextIndex];
+                          controller.updateStopDetails(stop.id,
+                              priority: nextPriority);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getPriorityColor(stop.priority)
+                                .withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: _getPriorityColor(stop.priority),
+                                width: 1),
+                          ),
+                          child: Text(
+                            stop.priority.name.toUpperCase(),
+                            style: TextStyle(
+                              color: _getPriorityColor(stop.priority),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Time Button
+                      InkWell(
+                        onTap: () => _showTimePicker(context, stop),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .cardColor
+                                .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                                width: 1),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.access_time,
+                                  size: 12,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color),
+                              const SizedBox(width: 4),
+                              Text(
+                                stop.timeConstraint?.format(context) ??
+                                    'Set Time',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                
-                if (stop.priority != StopPriority.medium)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: stop.priority == StopPriority.high
-                          ? Colors.red.withValues(alpha: 0.1)
-                          : Colors.grey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      stop.priority.name.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: stop.priority == StopPriority.high
-                            ? Colors.red
-                            : Colors.grey,
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.close, size: 20, color: Colors.grey),
+                  icon:
+                      Icon(Icons.close, color: Theme.of(context).disabledColor),
                   onPressed: () => controller.removeStop(stop.id),
                 ),
-              ],
-            ),
-          ),
-          
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius:
-                  const BorderRadius.vertical(bottom: Radius.circular(20)),
-            ),
-            child: Row(
-              children: [
                 ReorderableDragStartListener(
                   index: index,
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Icon(Icons.drag_indicator,
-                        size: 20, color: Colors.grey),
-                  ),
-                ),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: () => _showTimePicker(context, stop),
-                  icon: Icon(Icons.schedule,
-                      size: 16, color: Colors.grey.shade600),
-                  label: Text('Time',
-                      style:
-                          TextStyle(fontSize: 12, color: Colors.grey.shade700)),
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                TextButton.icon(
-                  onPressed: () => controller.toggleStopPriority(stop.id),
-                  icon: Icon(Icons.flag,
-                      size: 16, color: _getPriorityColor(stop.priority)),
-                  label: Text(stop.priority.name.toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: _getPriorityColor(stop.priority))),
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
+                  child: Icon(Icons.drag_indicator,
+                      color: Theme.of(context).disabledColor),
                 ),
               ],
             ),
@@ -589,6 +611,17 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
         ],
       ),
     ).animate(key: ValueKey(stop.id)).fadeIn(delay: (index * 50).ms).slideX();
+  }
+
+  Color _getPriorityColor(StopPriority priority) {
+    switch (priority) {
+      case StopPriority.high:
+        return Colors.red;
+      case StopPriority.medium:
+        return Colors.orange;
+      case StopPriority.low:
+        return Colors.green;
+    }
   }
 
   void _showHelpDialog(BuildContext context) {
@@ -631,7 +664,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
           width: double.infinity,
           height: 450,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -653,12 +686,13 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       style: GoogleFonts.outfit(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.grey),
+                      icon: Icon(Icons.close,
+                          color: Theme.of(context).iconTheme.color),
                       onPressed: () => Get.back(),
                     ),
                   ],
@@ -694,7 +728,8 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                             style: GoogleFonts.outfit(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
                             ),
                           ).animate().fadeIn().slideY(begin: 0.2, end: 0),
                           const SizedBox(height: 16),
@@ -703,7 +738,8 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                             textAlign: TextAlign.center,
                             style: GoogleFonts.outfit(
                               fontSize: 16,
-                              color: Colors.grey.shade600,
+                              color:
+                                  Theme.of(context).textTheme.bodyMedium?.color,
                               height: 1.5,
                             ),
                           ).animate().fadeIn(delay: 200.ms),
@@ -725,7 +761,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey.shade300,
+                        color: Theme.of(context).dividerColor,
                       ),
                     ),
                   ),
@@ -802,8 +838,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                     style: GoogleFonts.outfit(
                         fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 24),
-
-                
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
@@ -814,8 +848,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                
                 Text('Icon',
                     style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w600,
@@ -851,8 +883,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       .toList(),
                 ),
                 const SizedBox(height: 24),
-
-                
                 Text('Color',
                     style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w600,
@@ -893,8 +923,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                       .toList(),
                 ),
                 const SizedBox(height: 24),
-
-                
                 Text('Default Location',
                     style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w600,
@@ -963,10 +991,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                         ],
                       ),
                     )),
-
                 const SizedBox(height: 32),
-
-                
                 Row(
                   children: [
                     Expanded(
@@ -1081,17 +1106,6 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
     );
   }
 
-  Color _getPriorityColor(StopPriority priority) {
-    switch (priority) {
-      case StopPriority.high:
-        return Colors.red;
-      case StopPriority.medium:
-        return Colors.blue;
-      case StopPriority.low:
-        return Colors.grey;
-    }
-  }
-
   void _showHistoryDialog(BuildContext context) {
     final history = controller.getHistory();
 
@@ -1103,7 +1117,7 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
           width: double.infinity,
           height: 500,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -1130,7 +1144,8 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.grey),
+                      icon: Icon(Icons.close,
+                          color: Theme.of(context).disabledColor),
                       onPressed: () => Get.back(),
                     ),
                   ],
@@ -1143,13 +1158,14 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.history_toggle_off,
-                                size: 64, color: Colors.grey.shade300),
+                                size: 64,
+                                color: Theme.of(context).disabledColor),
                             const SizedBox(height: 16),
                             Text(
                               'No history yet',
                               style: GoogleFonts.outfit(
                                 fontSize: 18,
-                                color: Colors.grey.shade400,
+                                color: Theme.of(context).disabledColor,
                               ),
                             ),
                           ],
@@ -1168,12 +1184,15 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.grey.shade200),
+                              border: Border.all(
+                                  color: Theme.of(context).dividerColor),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.03),
+                                  color: Theme.of(context)
+                                      .shadowColor
+                                      .withValues(alpha: 0.05),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -1188,6 +1207,10 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                                     style: GoogleFonts.outfit(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.color,
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -1216,15 +1239,18 @@ class RouteOptimizerView extends GetView<RouteOptimizerController> {
                                   const SizedBox(height: 4),
                                   Text(
                                     message,
-                                    style: TextStyle(
-                                        color: Colors.green.shade700,
+                                    style: const TextStyle(
+                                        color: AppColors.success,
                                         fontWeight: FontWeight.w500),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     '${date.day}/${date.month} ${date.hour}:${date.minute.toString().padLeft(2, '0')}',
                                     style: TextStyle(
-                                        color: Colors.grey.shade500,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.color,
                                         fontSize: 12),
                                   ),
                                 ],

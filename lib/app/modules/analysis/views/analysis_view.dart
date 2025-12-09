@@ -6,33 +6,24 @@ import '../../../core/theme/app_colors.dart';
 import '../controllers/analysis_controller.dart';
 import '../../settings/settings_controller.dart';
 
-import '../widgets/chart_info_tutorial.dart';
-
 class AnalysisView extends GetView<AnalysisController> {
   const AnalysisView({super.key});
 
-  void _showChartInfo(BuildContext context, String chartType) {
-    showDialog(
-      context: context,
-      builder: (context) => ChartInfoTutorial(chartType: chartType),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Analysis & Insights',
-            style: TextStyle(
-                color: AppColors.textPrimaryLight,
-                fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
+        title: Text('Analysis & Insights',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
+        backgroundColor: theme.cardColor,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.textPrimaryLight, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: theme.iconTheme.color, size: 20),
           onPressed: () => Get.back(),
         ),
       ),
@@ -41,7 +32,6 @@ class AnalysisView extends GetView<AnalysisController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -55,8 +45,6 @@ class AnalysisView extends GetView<AnalysisController> {
               ),
             ),
             const SizedBox(height: 24),
-
-            
             Obx(() {
               final settings = Get.find<SettingsController>();
               String currency = settings.currency.value;
@@ -103,103 +91,34 @@ class AnalysisView extends GetView<AnalysisController> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _buildMetricTab('Money Saved'),
+                      const SizedBox(width: 12),
+                      _buildMetricTab('Trips'),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildBarChart(context),
+                  const SizedBox(height: 32),
+                  _buildTrendChart(context),
+                  const SizedBox(height: 32),
+                  _buildModeChart(context),
+                  const SizedBox(height: 32),
                 ],
-              );
+              )
+                  .animate()
+                  .fadeIn()
+                  .scale(delay: const Duration(milliseconds: 200));
             }),
-            const SizedBox(height: 32),
-
-            
-            Row(
-              children: [
-                const Text(
-                  'Savings Trend',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimaryLight,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.info_outline,
-                      color: AppColors.textSecondaryLight, size: 20),
-                  onPressed: () => _showChartInfo(context, 'Trend'),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildTrendChart(),
-            const SizedBox(height: 32),
-
-            
-            Row(
-              children: [
-                const Text(
-                  'Transport Modes',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimaryLight,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.info_outline,
-                      color: AppColors.textSecondaryLight, size: 20),
-                  onPressed: () => _showChartInfo(context, 'Mode'),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildModeChart(),
-            const SizedBox(height: 32),
-
-            
-            Row(
-              children: [
-                const Text(
-                  'Breakdown',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimaryLight,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.info_outline,
-                      color: AppColors.textSecondaryLight, size: 20),
-                  onPressed: () => _showChartInfo(context, 'Breakdown'),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                _buildMetricTab('Money Saved'),
-                const SizedBox(width: 12),
-                _buildMetricTab('Trips'),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildBarChart(),
-            const SizedBox(height: 32),
           ],
-        ).animate().fadeIn().scale(delay: const Duration(milliseconds: 200)),
+        ),
       ),
     );
   }
 
-  Widget _buildTrendChart() {
+  Widget _buildTrendChart(BuildContext context) {
     return SizedBox(
       height: 200,
       child: Obx(() {
@@ -232,7 +151,8 @@ class AnalysisView extends GetView<AnalysisController> {
               touchTooltipData: LineTouchTooltipData(
                 getTooltipColor: (_) => Colors.white,
                 tooltipPadding: const EdgeInsets.all(8),
-                tooltipBorder: BorderSide(color: Colors.grey.shade200),
+                tooltipBorder:
+                    BorderSide(color: Theme.of(context).dividerColor),
                 getTooltipItems: (touchedSpots) {
                   return touchedSpots.map((spot) {
                     final settings = Get.find<SettingsController>();
@@ -242,7 +162,6 @@ class AnalysisView extends GetView<AnalysisController> {
                     return LineTooltipItem(
                       '$currency ${(spot.y * rate).toStringAsFixed(0)}',
                       const TextStyle(
-                        color: AppColors.textPrimaryLight,
                         fontWeight: FontWeight.bold,
                       ),
                     );
@@ -256,7 +175,7 @@ class AnalysisView extends GetView<AnalysisController> {
     );
   }
 
-  Widget _buildModeChart() {
+  Widget _buildModeChart(BuildContext context) {
     return SizedBox(
       height: 250,
       child: Obx(() {
@@ -327,19 +246,17 @@ class AnalysisView extends GetView<AnalysisController> {
                   Text(
                     centerText,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimaryLight,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   Text(
                     subText,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondaryLight,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                        ),
                   ),
                 ],
               );
@@ -350,7 +267,7 @@ class AnalysisView extends GetView<AnalysisController> {
     );
   }
 
-  Widget _buildBarChart() {
+  Widget _buildBarChart(BuildContext context) {
     return SizedBox(
       height: 200,
       child: Obx(() {
@@ -478,7 +395,7 @@ class AnalysisView extends GetView<AnalysisController> {
     for (var item in controller.chartData) {
       if ((item['value'] as num) > max) max = (item['value'] as num).toDouble();
     }
-    return max * 1.2; 
+    return max * 1.2;
   }
 
   Widget _buildFilterChip(String label) {
@@ -489,10 +406,14 @@ class AnalysisView extends GetView<AnalysisController> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary : Colors.white,
+            color: isSelected
+                ? AppColors.primary
+                : Theme.of(Get.context!).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: isSelected ? AppColors.primary : Colors.grey.shade200,
+              color: isSelected
+                  ? AppColors.primary
+                  : Theme.of(Get.context!).dividerColor,
             ),
             boxShadow: isSelected
                 ? [
@@ -507,7 +428,9 @@ class AnalysisView extends GetView<AnalysisController> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.textSecondaryLight,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(Get.context!).textTheme.bodyMedium?.color,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
@@ -542,7 +465,9 @@ class AnalysisView extends GetView<AnalysisController> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: isSelected ? AppColors.textPrimaryLight : Colors.grey,
+              color: isSelected
+                  ? Theme.of(Get.context!).textTheme.bodyLarge?.color
+                  : Theme.of(Get.context!).disabledColor,
             ),
           ),
         );
@@ -556,11 +481,13 @@ class AnalysisView extends GetView<AnalysisController> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isPrimary ? AppColors.primary : Colors.white,
+        color: isPrimary ? AppColors.primary : Theme.of(Get.context!).cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: (isPrimary ? AppColors.primary : Colors.black)
+            color: (isPrimary
+                    ? AppColors.primary
+                    : Theme.of(Get.context!).shadowColor)
                 .withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
@@ -587,7 +514,9 @@ class AnalysisView extends GetView<AnalysisController> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: isPrimary ? Colors.white : AppColors.textPrimaryLight,
+              color: isPrimary
+                  ? Colors.white
+                  : Theme.of(Get.context!).textTheme.titleLarge?.color,
             ),
           ),
           const SizedBox(height: 4),
@@ -596,7 +525,7 @@ class AnalysisView extends GetView<AnalysisController> {
             style: TextStyle(
               color: isPrimary
                   ? Colors.white.withValues(alpha: 0.8)
-                  : AppColors.textSecondaryLight,
+                  : Theme.of(Get.context!).textTheme.bodyMedium?.color,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -607,7 +536,7 @@ class AnalysisView extends GetView<AnalysisController> {
               style: TextStyle(
                 color: isPrimary
                     ? Colors.white.withValues(alpha: 0.6)
-                    : AppColors.textTertiaryLight,
+                    : Theme.of(Get.context!).textTheme.bodySmall?.color,
                 fontSize: 10,
               ),
             ),

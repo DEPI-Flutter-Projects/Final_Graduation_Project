@@ -4,18 +4,17 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/utils/app_snackbars.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/services/pricing_service.dart';
 import '../../data/services/vehicle_service.dart';
 import 'add_vehicle_view.dart';
 
 class GarageController extends GetxController {
   final VehicleService _vehicleService = Get.find<VehicleService>();
+  final PricingService _pricingService = Get.find<PricingService>();
 
-  
   RxList<Map<String, dynamic>> get userVehicles => _vehicleService.userVehicles;
   RxBool get isLoading => _vehicleService.isLoading;
 
-  
-  
   final RxInt currentStep = 0.obs;
   PageController pageController = PageController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -40,22 +39,20 @@ class GarageController extends GetxController {
   final RxBool isDefault = false.obs;
   final RxBool isSaving = false.obs;
 
-  
   final RxBool showValidationErrors = false.obs;
   final RxInt shakeErrorTrigger = 0.obs;
 
   final RxnString selectedFuelType = RxnString();
-  List<String> get fuelTypes => _vehicleService.fuelTypes;
-  Map<String, double> get fuelPrices => _vehicleService.fuelPrices;
+  List<String> get fuelTypes => _pricingService.supportedFuelTypes;
+  Map<String, double> get fuelPrices => _pricingService.allPrices;
 
-  
   final RxnString editingVehicleId = RxnString();
   bool get isEditing => editingVehicleId.value != null;
 
   @override
   void onInit() {
     super.onInit();
-    
+
     if (userVehicles.isEmpty) {
       _vehicleService.fetchUserVehicles();
     }
@@ -72,8 +69,6 @@ class GarageController extends GetxController {
     _hintOverlay?.remove();
     _hintOverlay = null;
   }
-
-  
 
   Future<void> fetchBrands() async {
     try {
@@ -147,7 +142,6 @@ class GarageController extends GetxController {
   void selectModel(Map<String, dynamic> model) {
     selectedModel.value = model;
 
-    
     final int startYear = model['start_year'] ?? 1990;
     final int endYear = model['end_year'] ?? DateTime.now().year + 1;
     availableYears.value =
@@ -155,8 +149,6 @@ class GarageController extends GetxController {
 
     nextStep();
   }
-
-  
 
   void nextStep() {
     if (currentStep.value < 2) {
@@ -183,8 +175,6 @@ class GarageController extends GetxController {
     }
   }
 
-  
-
   void openAddVehicle() {
     resetForm();
     Get.to(
@@ -198,7 +188,6 @@ class GarageController extends GetxController {
     resetForm(initialPage: 2);
     editingVehicleId.value = vehicle['id'];
 
-    
     final model = vehicle['car_models'];
     final brand = model['car_brands'];
 
@@ -210,13 +199,12 @@ class GarageController extends GetxController {
     isDefault.value = vehicle['is_default'] ?? false;
     customLabelController.text = vehicleLabel.value;
 
-    
     final int startYear = model['start_year'] ?? 1990;
     final int endYear = model['end_year'] ?? DateTime.now().year + 1;
     availableYears.value =
         List.generate(endYear - startYear + 1, (index) => endYear - index);
 
-    currentStep.value = 2; 
+    currentStep.value = 2;
 
     Get.to(
       () => const AddVehicleView(),
@@ -226,7 +214,7 @@ class GarageController extends GetxController {
   }
 
   void resetForm({int initialPage = 0}) {
-    _removeHint(); 
+    _removeHint();
     currentStep.value = initialPage;
     if (pageController.hasClients) pageController.dispose();
     pageController = PageController(initialPage: initialPage);
@@ -253,7 +241,6 @@ class GarageController extends GetxController {
 
     debugPrint('Attempting to save vehicle...');
 
-    
     bool isValid = true;
     if (selectedModel.value == null) isValid = false;
     if (selectedYear.value == null) isValid = false;
@@ -261,8 +248,8 @@ class GarageController extends GetxController {
 
     if (!isValid) {
       showValidationErrors.value = true;
-      shakeErrorTrigger.value++; 
-      isSaving.value = false; 
+      shakeErrorTrigger.value++;
+      isSaving.value = false;
       AppSnackbars.showWarning(
           'Required', 'Please fill in all mandatory fields');
       return;
@@ -279,7 +266,6 @@ class GarageController extends GetxController {
       debugPrint(
           'Saving vehicle for user: $userId, Model: ${selectedModel.value!['id']}, Year: ${selectedYear.value}');
 
-      
       if (!isEditing) {
         final duplicate = userVehicles.firstWhereOrNull((v) =>
             v['model_id'] == selectedModel.value!['id'] &&
@@ -292,7 +278,6 @@ class GarageController extends GetxController {
         }
       }
 
-      
       if (isDefault.value) {
         await Supabase.instance.client
             .from('user_vehicles')
@@ -313,16 +298,15 @@ class GarageController extends GetxController {
             .from('user_vehicles')
             .update(vehicleData)
             .eq('id', editingVehicleId.value!);
-        await _vehicleService.fetchUserVehicles(); 
+        await _vehicleService.fetchUserVehicles();
         AppSnackbars.showSuccess('Success', 'Vehicle updated successfully');
       } else {
         await Supabase.instance.client
             .from('user_vehicles')
             .insert(vehicleData);
 
-        await _vehicleService.fetchUserVehicles(); 
+        await _vehicleService.fetchUserVehicles();
 
-        
         Get.dialog(
           Dialog(
             backgroundColor: Colors.transparent,
@@ -360,23 +344,21 @@ class GarageController extends GetxController {
           barrierDismissible: false,
         );
 
-        
         await Future.delayed(const Duration(seconds: 2));
 
         if (Get.isDialogOpen == true) {
-          Get.back(); 
+          Get.back();
         }
 
-        Get.back(); 
+        Get.back();
       }
 
       debugPrint('Vehicle saved successfully');
 
-      
       FocusManager.instance.primaryFocus?.unfocus();
     } catch (e) {
       debugPrint('Error saving vehicle: $e');
-      if (Get.isDialogOpen == true) Get.back(); 
+      if (Get.isDialogOpen == true) Get.back();
       AppSnackbars.showError('Error', 'Failed to save vehicle: $e');
     } finally {
       isSaving.value = false;
@@ -388,12 +370,10 @@ class GarageController extends GetxController {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) return;
 
-      
       await Supabase.instance.client
           .from('user_vehicles')
           .update({'is_default': false}).eq('user_id', userId);
 
-      
       await Supabase.instance.client
           .from('user_vehicles')
           .update({'is_default': true}).eq('id', vehicleId);
@@ -462,7 +442,9 @@ class GarageController extends GetxController {
                           'Success', 'Vehicle set as default');
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1A1F36),
+                      backgroundColor: isExistingDefault
+                          ? AppColors.surfaceDark
+                          : const Color(0xFF1A1F36),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -502,17 +484,14 @@ class GarageController extends GetxController {
     );
   }
 
-  
   OverlayEntry? _hintOverlay;
   Timer? _hintTimer;
-  
 
   Future<void> showSwipeHintIfNeeded(BuildContext context) async {
-    
     if (userVehicles.isEmpty) return;
 
     try {
-      _removeHint(); 
+      _removeHint();
 
       _hintOverlay = OverlayEntry(
         builder: (context) => Positioned(

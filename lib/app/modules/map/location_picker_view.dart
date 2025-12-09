@@ -10,14 +10,13 @@ class LocationPickerView extends GetView<LocationPickerController> {
 
   @override
   Widget build(BuildContext context) {
-    
     final controller = Get.put(LocationPickerController());
+    final theme = Theme.of(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          
           Obx(() => FlutterMap(
                 mapController: controller.mapController,
                 options: MapOptions(
@@ -46,8 +45,6 @@ class LocationPickerView extends GetView<LocationPickerController> {
                   ),
                 ],
               )),
-
-          
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 16,
@@ -55,11 +52,15 @@ class LocationPickerView extends GetView<LocationPickerController> {
             child: Row(
               children: [
                 Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 4)
+                      BoxShadow(
+                          color: Theme.of(context)
+                              .shadowColor
+                              .withValues(alpha: 0.1),
+                          blurRadius: 4)
                     ],
                   ),
                   child: IconButton(
@@ -71,10 +72,14 @@ class LocationPickerView extends GetView<LocationPickerController> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 4)
+                      boxShadow: [
+                        BoxShadow(
+                            color: Theme.of(context)
+                                .shadowColor
+                                .withValues(alpha: 0.1),
+                            blurRadius: 4)
                       ],
                     ),
                     child: TextField(
@@ -96,61 +101,62 @@ class LocationPickerView extends GetView<LocationPickerController> {
               ],
             ),
           ),
-
-          
           Positioned(
             right: 16,
             top: MediaQuery.of(context).padding.top + 80,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 4)
+                boxShadow: [
+                  BoxShadow(
+                      color:
+                          Theme.of(context).shadowColor.withValues(alpha: 0.1),
+                      blurRadius: 4)
                 ],
               ),
               child: Column(
                 children: [
                   _buildModeButton(
-                      MapMode.normal, Icons.map_outlined, controller),
+                      context, MapMode.normal, Icons.map_outlined, controller),
+                  const Divider(height: 1),
+                  _buildModeButton(context, MapMode.satellite,
+                      Icons.satellite_alt, controller),
                   const Divider(height: 1),
                   _buildModeButton(
-                      MapMode.satellite, Icons.satellite_alt, controller),
-                  const Divider(height: 1),
-                  _buildModeButton(MapMode.terrain, Icons.terrain, controller),
+                      context, MapMode.terrain, Icons.terrain, controller),
                 ],
               ),
             ),
           ),
-
-          
           Positioned(
             right: 16,
             top: MediaQuery.of(context).padding.top + 230,
             child: FloatingActionButton(
               heroTag: 'my_location',
               onPressed: controller.goToCurrentLocation,
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).cardColor,
               mini: true,
-              child: const Icon(Icons.my_location, color: AppColors.primary),
+              child: Icon(Icons.my_location,
+                  color: Theme.of(context).iconTheme.color),
             ),
           ),
-
-          
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
               padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black12,
+                      color:
+                          Theme.of(context).shadowColor.withValues(alpha: 0.1),
                       blurRadius: 10,
-                      offset: Offset(0, -2))
+                      offset: const Offset(0, -2))
                 ],
               ),
               child: SafeArea(
@@ -159,11 +165,11 @@ class LocationPickerView extends GetView<LocationPickerController> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Selected Location',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondaryLight,
+                        color: theme.textTheme.bodySmall?.color,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -176,10 +182,13 @@ class LocationPickerView extends GetView<LocationPickerController> {
                             Expanded(
                               child: Text(
                                 controller.selectedAddress.value,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimaryLight,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -224,8 +233,8 @@ class LocationPickerView extends GetView<LocationPickerController> {
     );
   }
 
-  Widget _buildModeButton(
-      MapMode mode, IconData icon, LocationPickerController controller) {
+  Widget _buildModeButton(BuildContext context, MapMode mode, IconData icon,
+      LocationPickerController controller) {
     return Obx(() {
       final isSelected = controller.currentMapMode.value == mode;
       return Material(
@@ -237,8 +246,9 @@ class LocationPickerView extends GetView<LocationPickerController> {
             color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : null,
             child: Icon(
               icon,
-              color:
-                  isSelected ? AppColors.primary : AppColors.textSecondaryLight,
+              color: isSelected
+                  ? AppColors.primary
+                  : Theme.of(context).iconTheme.color?.withValues(alpha: 0.5),
               size: 24,
             ),
           ),

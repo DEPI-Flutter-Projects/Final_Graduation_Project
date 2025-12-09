@@ -13,16 +13,15 @@ class OnboardingView extends GetView<OnboardingController> {
     return Scaffold(
       body: Stack(
         children: [
-          
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF1A237E), 
+                  Color(0xFF1A237E),
                   Color(0xFF0D47A1),
-                  Color(0xFF006064), 
+                  Color(0xFF006064),
                 ],
               ),
             ),
@@ -30,8 +29,6 @@ class OnboardingView extends GetView<OnboardingController> {
               .animate(onPlay: (controller) => controller.repeat(reverse: true))
               .shimmer(
                   duration: const Duration(seconds: 5), color: Colors.white10),
-
-          
           Positioned.fill(
             child: Opacity(
               opacity: 0.05,
@@ -46,16 +43,13 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
           ),
-
-          
           SafeArea(
             child: Column(
               children: [
-                
                 Align(
                   alignment: Alignment.topRight,
                   child: TextButton(
-                    onPressed: () => Get.offAllNamed(Routes.AUTH),
+                    onPressed: () => Get.offAllNamed(Routes.auth),
                     child: Text(
                       'SKIP',
                       style: GoogleFonts.outfit(
@@ -66,7 +60,6 @@ class OnboardingView extends GetView<OnboardingController> {
                     ),
                   ),
                 ),
-
                 Expanded(
                   child: PageView.builder(
                     controller: controller.pageController,
@@ -78,8 +71,6 @@ class OnboardingView extends GetView<OnboardingController> {
                     },
                   ),
                 ),
-
-                
                 _buildBottomControls(context),
               ],
             ),
@@ -95,7 +86,6 @@ class OnboardingView extends GetView<OnboardingController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          
           Container(
             padding: const EdgeInsets.all(40),
             decoration: BoxDecoration(
@@ -120,10 +110,7 @@ class OnboardingView extends GetView<OnboardingController> {
               .scale(duration: 600.ms, curve: Curves.easeOutBack)
               .then(delay: 200.ms)
               .shimmer(duration: 1200.ms),
-
           const SizedBox(height: 60),
-
-          
           Text(
             page.title,
             textAlign: TextAlign.center,
@@ -134,10 +121,7 @@ class OnboardingView extends GetView<OnboardingController> {
               height: 1.2,
             ),
           ).animate().fadeIn().moveY(begin: 20, end: 0),
-
           const SizedBox(height: 20),
-
-          
           Text(
             page.description,
             textAlign: TextAlign.center,
@@ -158,7 +142,6 @@ class OnboardingView extends GetView<OnboardingController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          
           Obx(() => Row(
                 children: List.generate(
                   controller.pages.length,
@@ -176,8 +159,6 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                 ),
               )),
-
-          
           Obx(() {
             final isLast =
                 controller.currentPage.value == controller.pages.length - 1;

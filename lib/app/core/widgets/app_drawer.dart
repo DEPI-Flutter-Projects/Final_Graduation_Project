@@ -12,14 +12,11 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    
     final profileController = Get.find<ProfileController>();
 
     return Drawer(
       child: Column(
         children: [
-          
           UserAccountsDrawerHeader(
             decoration: const BoxDecoration(color: AppColors.primary),
             accountName: Obx(() => Text(
@@ -55,19 +52,19 @@ class AppDrawer extends StatelessWidget {
               );
             }),
           ),
-          
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
                 ...navigationItems.map((item) {
                   return ListTile(
-                    leading: Icon(item.icon, color: AppColors.textPrimaryLight),
+                    leading: Icon(item.icon,
+                        color: Theme.of(context).iconTheme.color),
                     title: Text(item.title,
                         style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w600)),
                     onTap: () {
-                      Get.back(); 
+                      Get.back();
                       Get.toNamed(item.route);
                     },
                   );
@@ -78,28 +75,29 @@ class AppDrawer extends StatelessWidget {
                   title: 'Favorites',
                   onTap: () {
                     Get.back();
-                    Get.toNamed(Routes.FAVORITES);
+                    Get.toNamed(Routes.favorites);
                   },
+                  context: context,
                 ),
                 _buildDrawerItem(
                   icon: Icons.history,
                   title: 'Recent Routes',
                   onTap: () {
                     Get.back();
-                    Get.toNamed(Routes.RECENT_ROUTES);
+                    Get.toNamed(Routes.recentRoutes);
                   },
+                  context: context,
                 ),
               ],
             ),
           ),
-          
           ListTile(
             leading: const Icon(Icons.logout, color: AppColors.error),
             title: const Text('Sign Out',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             onTap: () async {
               await Supabase.instance.client.auth.signOut();
-              Get.offAllNamed(Routes.AUTH);
+              Get.offAllNamed(Routes.auth);
             },
           ),
           const SizedBox(height: 20),
@@ -112,9 +110,10 @@ class AppDrawer extends StatelessWidget {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    required BuildContext context,
   }) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.textPrimaryLight),
+      leading: Icon(icon, color: Theme.of(context).iconTheme.color),
       title: Text(title,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       onTap: onTap,

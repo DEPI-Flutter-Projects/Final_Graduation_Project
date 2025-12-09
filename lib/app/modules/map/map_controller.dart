@@ -3,48 +3,38 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter_map/flutter_map.dart' as fm; 
+import 'package:flutter_map/flutter_map.dart' as fm;
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import '../../controllers/location_controller.dart';
 import '../../data/services/notification_service.dart';
 
+import '../../core/utils/constants.dart';
+
 class MapController extends GetxController {
   final locationReady = false.obs;
-  final currentLatLng = const LatLng(30.0444, 31.2357).obs; 
+  final currentLatLng = const LatLng(30.0444, 31.2357).obs;
   final markers = <LatLng>[].obs;
 
-  
   final routePoints = <LatLng>[].obs;
   final remainingDistance = '0 km'.obs;
   final remainingTime = '0 min'.obs;
-  final totalDistance = 0.0.obs; 
+  final totalDistance = 0.0.obs;
 
-  
-  final mapStyle = 'Normal'.obs; 
+  final mapStyle = 'Normal'.obs;
 
-  
   final fm.MapController mapController = fm.MapController();
 
-  
   final LocationController _locationController = Get.find<LocationController>();
 
-  
   final isTracking = false.obs;
   final currentRotation = 0.0.obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    
-  }
 
   @override
   void onReady() async {
     super.onReady();
     refreshArguments();
 
-    
     final enabled = await _locationController.ensureLocationEnabled();
     if (enabled) {
       _initLocation();
@@ -68,8 +58,6 @@ class MapController extends GetxController {
           _fetchRoute();
         }
       } else if (args['mode'] == 'analysis_view') {
-        
-        
         if (args['optimized_stops'] != null) {
           final stops = args['optimized_stops'] as List;
           clearMarkers();
@@ -99,7 +87,6 @@ class MapController extends GetxController {
   }
 
   void rotateMap() {
-    
     double newRotation = currentRotation.value + 90.0;
     if (newRotation >= 360) newRotation = 0;
 
@@ -115,28 +102,23 @@ class MapController extends GetxController {
   void toggleTracking() {
     isTracking.value = !isTracking.value;
     if (isTracking.value) {
-      
       mapController.move(currentLatLng.value, mapController.camera.zoom);
     }
   }
 
-  
   final NotificationService _notificationService =
       Get.find<NotificationService>();
 
-  
   bool _hasSentArrivalAlert = false;
   Timer? _gpsTimeoutTimer;
 
   void _initLocation() {
-    
     if (_locationController.currentPosition.value != null) {
       final pos = _locationController.currentPosition.value!;
       currentLatLng.value = LatLng(pos.latitude, pos.longitude);
       locationReady.value = true;
     }
 
-    
     ever(_locationController.currentPosition, (position) {
       _resetGpsTimer();
 
@@ -145,12 +127,10 @@ class MapController extends GetxController {
         currentLatLng.value = newPos;
         locationReady.value = true;
 
-        
         if (isTracking.value) {
           mapController.move(newPos, mapController.camera.zoom);
         }
 
-        
         if (routePoints.isNotEmpty) {
           _checkArrivalAlert(newPos);
         }
@@ -179,11 +159,8 @@ class MapController extends GetxController {
     final distance =
         const Distance().as(LengthUnit.Meter, currentPos, destination);
 
-    
     final threshold = (totalDistance.value * 0.1).clamp(200.0, 5000.0);
 
-    
-    
     if (distance < threshold && !_hasSentArrivalAlert) {
       String body;
       if (distance < 100) {
@@ -200,7 +177,7 @@ class MapController extends GetxController {
       );
       _hasSentArrivalAlert = true;
     } else if (distance > (threshold * 2)) {
-      _hasSentArrivalAlert = false; 
+      _hasSentArrivalAlert = false;
     }
   }
 
@@ -223,18 +200,15 @@ class MapController extends GetxController {
     clearMarkers();
     addMarker(start);
     addMarker(end);
-    
   }
 
   Future<void> _fetchRoute() async {
     if (markers.length < 2) return;
 
     try {
-      
       final url = Uri.parse(
           'https://api.openrouteservice.org/v2/directions/driving-car/geojson');
 
-      
       final body = json.encode({
         "coordinates": markers.map((p) => [p.longitude, p.latitude]).toList(),
       });
@@ -242,10 +216,9 @@ class MapController extends GetxController {
       final response = await http.post(
         url,
         headers: {
-          'Authorization':
-              '5b3ce3597851110001cf6248dabfee823c124943a4373830acc163ed', 
+          'Authorization': ApiConstants.openRouteServiceKey,
           'Content-Type': 'application/json; charset=UTF-8',
-          'User-Agent': 'El-Moshwar/1.0', 
+          'User-Agent': 'El-Moshwar/1.0',
         },
         body: body,
       );
@@ -258,14 +231,12 @@ class MapController extends GetxController {
           final geometry = feature['geometry'];
           final coordinates = geometry['coordinates'] as List;
 
-          
           final points = coordinates
               .map((coord) => LatLng(coord[1].toDouble(), coord[0].toDouble()))
               .toList();
 
           routePoints.assignAll(points);
 
-          
           final properties = feature['properties'];
           final summary = properties['summary'];
           final distanceMeters = summary['distance'] as num;
@@ -276,21 +247,44 @@ class MapController extends GetxController {
               '${(distanceMeters / 1000).toStringAsFixed(1)} km';
           remainingTime.value = '${(durationSeconds / 60).round()} min';
 
-          
           isTracking.value = true;
 
-          
           _fitCameraToRoute(points);
         }
       } else {
         debugPrint(
             'Error fetching route: ${response.statusCode} - ${response.body}');
-        Get.snackbar('Route Error',
-            'Could not fetch route. Status: ${response.statusCode}');
+        String errorMessage = 'Could not fetch route.';
+        if (response.statusCode == 403) {
+          errorMessage = 'Service Limit Reached or Invalid Key (403).';
+        }
+        Get.snackbar(
+          'Route Error',
+          errorMessage,
+          backgroundColor: Colors.red.shade900,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+          shouldIconPulse: false,
+          overlayBlur: 0,
+        );
       }
     } catch (e) {
       debugPrint('Error fetching route: $e');
-      Get.snackbar('Error', 'Failed to connect to routing service.');
+      Get.snackbar(
+        'Connection Error',
+        'Failed to connect to routing service.',
+        backgroundColor: Colors.red.shade900,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.wifi_off, color: Colors.white),
+        shouldIconPulse: false,
+        overlayBlur: 0,
+      );
     }
   }
 
@@ -299,7 +293,6 @@ class MapController extends GetxController {
 
     final bounds = fm.LatLngBounds.fromPoints(points);
 
-    
     mapController.fitCamera(
       fm.CameraFit.bounds(
         bounds: bounds,
@@ -317,12 +310,10 @@ class MapController extends GetxController {
     String waypointsString = '';
     if (markers.length > 2) {
       final waypoints = markers.sublist(1, markers.length - 1);
-      waypointsString = '&waypoints=' +
-          waypoints.map((p) => '${p.latitude},${p.longitude}').join('|');
+      waypointsString =
+          '&waypoints=${waypoints.map((p) => '${p.latitude},${p.longitude}').join('|')}';
     }
 
-    
-    
     final url = Uri.parse(
         'https://www.google.com/maps/dir/?api=1&origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}$waypointsString&travelmode=driving');
 
@@ -330,7 +321,6 @@ class MapController extends GetxController {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
-        
         debugPrint('Could not launch maps url: $url');
         Get.snackbar('Error', 'Could not open Maps application');
       }

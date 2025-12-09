@@ -1,5 +1,3 @@
-
-
 import 'package:get/get.dart';
 import '../modules/splash/splash_view.dart';
 import '../modules/splash/splash_binding.dart';
@@ -53,157 +51,157 @@ import '../modules/notifications/notifications_controller.dart';
 import 'app_routes.dart';
 
 class AppPages {
-  static const INITIAL = Routes.SPLASH;
+  static const initial = Routes.splash;
 
   static final routes = [
     GetPage(
-      name: Routes.SPLASH,
+      name: Routes.splash,
       page: () => const SplashView(),
       binding: SplashBinding(),
     ),
     GetPage(
-      name: Routes.ONBOARDING,
+      name: Routes.onboarding,
       page: () => const OnboardingView(),
       binding: OnboardingBinding(),
     ),
     GetPage(
-      name: Routes.AUTH,
+      name: Routes.auth,
       page: () => const AuthView(),
       binding: AuthBinding(),
     ),
     GetPage(
-      name: Routes.MAIN,
+      name: Routes.main,
       page: () => const MainLayoutView(),
       binding: MainLayoutBinding(),
     ),
     GetPage(
-      name: Routes.HOME,
+      name: Routes.home,
       page: () => const HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
-      name: Routes.MAINTENANCE,
+      name: Routes.maintenance,
       page: () => const MaintenanceView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => MaintenanceController());
       }),
     ),
     GetPage(
-      name: Routes.EMERGENCY,
+      name: Routes.emergency,
       page: () => const EmergencyView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => EmergencyController());
       }),
     ),
     GetPage(
-      name: Routes.GAMIFICATION,
+      name: Routes.gamification,
       page: () => const GamificationView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => GamificationController());
       }),
     ),
     GetPage(
-      name: Routes.ANALYTICS,
+      name: Routes.analytics,
       page: () => const AnalyticsView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => AnalyticsController());
       }),
     ),
     GetPage(
-      name: Routes.ROUTE_PLANNER,
+      name: Routes.routePlanner,
       page: () => const RoutePlannerView(),
       binding: RoutePlannerBinding(),
     ),
     GetPage(
-      name: Routes.ROUTE_OPTIMIZER,
+      name: Routes.routeOptimizer,
       page: () => const RouteOptimizerView(),
       binding: RouteOptimizerBinding(),
     ),
     GetPage(
-      name: Routes.COST_CALCULATOR,
+      name: Routes.costCalculator,
       page: () => const CostCalculatorView(),
       binding: CostCalculatorBinding(),
     ),
     GetPage(
-      name: Routes.SETTINGS,
+      name: Routes.settings,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
     ),
     GetPage(
-      name: Routes.GARAGE,
+      name: Routes.garage,
       page: () => const GarageView(),
       binding: GarageBinding(),
     ),
     GetPage(
-      name: Routes.MAP_VIEW,
+      name: Routes.mapView,
       page: () => const MapView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => MapController());
       }),
     ),
     GetPage(
-      name: Routes.LOCATION_PICKER,
+      name: Routes.locationPicker,
       page: () => const LocationPickerView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => LocationPickerController());
       }),
     ),
     GetPage(
-      name: Routes.PROFILE,
+      name: Routes.profile,
       page: () => const ProfileView(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => ProfileController());
       }),
     ),
     GetPage(
-      name: Routes.RECENT_ROUTES,
+      name: Routes.recentRoutes,
       page: () => const RecentRoutesView(),
     ),
     GetPage(
-      name: Routes.ANALYSIS,
+      name: Routes.analysis,
       page: () => const AnalysisView(),
       binding: BindingsBuilder(() {
         Get.lazyPut<AnalysisController>(() => AnalysisController());
       }),
     ),
     GetPage(
-      name: Routes.ROUTE_DETAILS,
+      name: Routes.routeDetails,
       page: () => const RouteDetailsView(),
       binding: RouteDetailsBinding(),
     ),
     GetPage(
-      name: Routes.FAVORITES,
+      name: Routes.favorites,
       page: () => const FavoritesView(),
       binding: FavoritesBinding(),
     ),
     GetPage(
-      name: Routes.ADD_VEHICLE,
+      name: Routes.addVehicle,
       page: () => const AddVehicleView(),
       binding: GarageBinding(),
     ),
     GetPage(
-      name: Routes.FORGOT_PASSWORD,
+      name: Routes.forgotPassword,
       page: () => const ForgotPasswordView(),
     ),
     GetPage(
-      name: Routes.RESET_PASSWORD,
+      name: Routes.resetPassword,
       page: () => const ResetPasswordView(),
     ),
     GetPage(
-      name: Routes.CHANGE_PASSWORD,
+      name: Routes.changePassword,
       page: () => const ChangePasswordView(),
       binding: SettingsBinding(),
     ),
     GetPage(
-      name: Routes.PRIVACY_POLICY,
+      name: Routes.privacyPolicy,
       page: () => const PrivacyPolicyView(),
     ),
     GetPage(
-      name: Routes.TERMS_OF_SERVICE,
+      name: Routes.termsOfService,
       page: () => const TermsOfServiceView(),
     ),
     GetPage(
-      name: Routes.NOTIFICATIONS,
+      name: Routes.notifications,
       page: () => const NotificationsView(),
       binding: BindingsBuilder(() {
         Get.put(NotificationsController());

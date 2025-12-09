@@ -18,15 +18,16 @@ class AppSnackbars {
 
   static void showSuccess(String title, String message) {
     if (!_shouldShow()) return;
-    Get.closeAllSnackbars(); 
+    Get.closeAllSnackbars();
+    final theme = Get.theme;
     Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.only(top: 50, left: 16, right: 16),
       borderRadius: 12,
-      backgroundColor: Colors.white,
-      colorText: AppColors.textPrimaryLight,
+      backgroundColor: theme.colorScheme.surface,
+      colorText: theme.colorScheme.onSurface,
       icon: const Icon(Icons.check_circle, color: AppColors.success, size: 28),
       shouldIconPulse: true,
       leftBarIndicatorColor: AppColors.success,
@@ -44,14 +45,15 @@ class AppSnackbars {
   static void showError(String title, String message) {
     if (!_shouldShow()) return;
     Get.closeAllSnackbars();
+    final theme = Get.theme;
     Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      backgroundColor: Colors.white,
-      colorText: AppColors.textPrimaryLight,
+      backgroundColor: theme.colorScheme.surface,
+      colorText: theme.colorScheme.onSurface,
       icon: const Icon(Icons.error, color: AppColors.error, size: 28),
       shouldIconPulse: true,
       leftBarIndicatorColor: AppColors.error,
@@ -69,14 +71,15 @@ class AppSnackbars {
   static void showWarning(String title, String message) {
     if (!_shouldShow()) return;
     Get.closeAllSnackbars();
+    final theme = Get.theme;
     Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      backgroundColor: Colors.white,
-      colorText: AppColors.textPrimaryLight,
+      backgroundColor: theme.colorScheme.surface,
+      colorText: theme.colorScheme.onSurface,
       icon: const Icon(Icons.warning_amber_rounded,
           color: AppColors.warning, size: 28),
       shouldIconPulse: true,
@@ -93,17 +96,19 @@ class AppSnackbars {
   }
 
   static void showInfo(String title, String message) {
+    final theme = Get.theme;
     Get.snackbar(
       title,
       message,
       snackPosition: SnackPosition.TOP,
       margin: const EdgeInsets.all(16),
       borderRadius: 12,
-      backgroundColor: Colors.white,
-      colorText: AppColors.textPrimaryLight,
-      icon: const Icon(Icons.info_outline, color: AppColors.primary, size: 28),
+      backgroundColor: theme.colorScheme.surface,
+      colorText: theme.colorScheme.onSurface,
+      icon:
+          Icon(Icons.info_outline, color: theme.colorScheme.primary, size: 28),
       shouldIconPulse: true,
-      leftBarIndicatorColor: AppColors.primary,
+      leftBarIndicatorColor: theme.colorScheme.primary,
       boxShadows: [
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.1),

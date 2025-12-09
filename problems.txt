@@ -1,0 +1,61 @@
+Analyzing el_moshwar...                                         
+
+   info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\app\data\services\share_service.dart:82:13 - deprecated_member_use
+   info - 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\app\data\services\share_service.dart:82:19 - deprecated_member_use
+   info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\app\data\services\share_service.dart:157:13 - deprecated_member_use
+   info - 'share' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\app\data\services\share_service.dart:157:19 - deprecated_member_use
+  error - Target of URI doesn't exist: '../../core/values/pricing_constants.dart' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:5:8 - uri_does_not_exist
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:405:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:407:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:409:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:411:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:413:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:415:17 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:420:46 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:428:21 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:429:22 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:430:28 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:431:22 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:432:28 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:433:22 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:435:22 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:442:9 - undefined_identifier
+  error - Undefined name 'PricingConstants' - lib\app\modules\cost_calculator\cost_calculator_controller.dart:443:9 - undefined_identifier
+   info - Empty catch block - lib\app\modules\cost_calculator\cost_calculator_view.dart:302:17 - empty_catches
+warning - Unused import: '../../core/theme/app_colors.dart' - lib\app\modules\favorites\favorites_view.dart:5:8 - unused_import
+   info - Empty catch block - lib\app\modules\home\home_view.dart:649:17 - empty_catches
+   info - Empty catch block - lib\app\modules\profile\profile_controller.dart:358:21 - empty_catches
+warning - Unused import: '../../core/theme/app_colors.dart' - lib\app\modules\profile\profile_view.dart:11:8 - unused_import
+   info - Empty catch block - lib\app\modules\route_details\route_details_view.dart:77:29 - empty_catches
+   info - Empty catch block - lib\app\modules\route_planner\route_planner_view.dart:655:19 - empty_catches
+warning - Unused import: '../../core/theme/app_colors.dart' - lib\app\modules\settings\settings_view.dart:3:8 - unused_import
+   info - The constant name 'INITIAL' isn't a lowerCamelCase identifier - lib\app\routes\app_pages.dart:56:16 - constant_identifier_names
+   info - The constant name 'SPLASH' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:4:16 - constant_identifier_names
+   info - The constant name 'ONBOARDING' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:5:16 - constant_identifier_names
+   info - The constant name 'AUTH' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:6:16 - constant_identifier_names
+   info - The constant name 'MAIN' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:7:16 - constant_identifier_names
+   info - The constant name 'HOME' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:8:16 - constant_identifier_names
+   info - The constant name 'MAINTENANCE' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:9:16 - constant_identifier_names
+   info - The constant name 'EMERGENCY' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:10:16 - constant_identifier_names
+   info - The constant name 'GAMIFICATION' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:11:16 - constant_identifier_names
+   info - The constant name 'ANALYTICS' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:12:16 - constant_identifier_names
+   info - The constant name 'ROUTE_PLANNER' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:13:16 - constant_identifier_names
+   info - The constant name 'COST_CALCULATOR' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:14:16 - constant_identifier_names
+   info - The constant name 'SETTINGS' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:15:16 - constant_identifier_names
+   info - The constant name 'GARAGE' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:16:16 - constant_identifier_names
+   info - The constant name 'MAP_VIEW' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:17:16 - constant_identifier_names
+   info - The constant name 'PROFILE' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:18:16 - constant_identifier_names
+   info - The constant name 'RECENT_ROUTES' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:19:16 - constant_identifier_names
+   info - The constant name 'ANALYSIS' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:20:16 - constant_identifier_names
+   info - The constant name 'ROUTE_DETAILS' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:21:16 - constant_identifier_names
+   info - The constant name 'FAVORITES' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:22:16 - constant_identifier_names
+   info - The constant name 'ADD_VEHICLE' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:23:16 - constant_identifier_names
+   info - The constant name 'FORGOT_PASSWORD' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:24:16 - constant_identifier_names
+   info - The constant name 'RESET_PASSWORD' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:25:16 - constant_identifier_names
+   info - The constant name 'CHANGE_PASSWORD' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:26:16 - constant_identifier_names
+   info - The constant name 'PRIVACY_POLICY' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:27:16 - constant_identifier_names
+   info - The constant name 'TERMS_OF_SERVICE' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:28:16 - constant_identifier_names
+   info - The constant name 'NOTIFICATIONS' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:29:16 - constant_identifier_names
+   info - The constant name 'ROUTE_OPTIMIZER' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:30:16 - constant_identifier_names
+   info - The constant name 'LOCATION_PICKER' isn't a lowerCamelCase identifier - lib\app\routes\app_routes.dart:31:16 - constant_identifier_names
+

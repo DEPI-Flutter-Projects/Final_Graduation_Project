@@ -11,37 +11,37 @@ class RecentRoutesView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Recent Routes',
           style: TextStyle(
-            color: AppColors.textPrimaryLight,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimaryLight),
+          icon:
+              Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () => Get.back(),
         ),
       ),
       body: Column(
         children: [
-          
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search routes...',
                 prefixIcon: const Icon(Icons.search,
                     color: AppColors.textSecondaryLight),
                 filled: true,
-                fillColor: AppColors.backgroundLight,
+                fillColor: Theme.of(context).scaffoldBackgroundColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -51,8 +51,6 @@ class RecentRoutesView extends GetView<HomeController> {
               ),
             ),
           ),
-
-          
           Expanded(
             child: Obx(() {
               if (controller.recentRoutes.isEmpty) {
@@ -81,7 +79,7 @@ class RecentRoutesView extends GetView<HomeController> {
                 itemCount: controller.recentRoutes.length,
                 itemBuilder: (context, index) {
                   final route = controller.recentRoutes[index];
-                  return _buildRouteCard(route, index);
+                  return _buildRouteCard(route, index, context);
                 },
               );
             }),
@@ -91,17 +89,18 @@ class RecentRoutesView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildRouteCard(Map<String, dynamic> route, int index) {
+  Widget _buildRouteCard(
+      Map<String, dynamic> route, int index, BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -112,7 +111,7 @@ class RecentRoutesView extends GetView<HomeController> {
             child: InkWell(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
-              onTap: () => Get.toNamed(Routes.ROUTE_DETAILS, arguments: route),
+              onTap: () => Get.toNamed(Routes.routeDetails, arguments: route),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -155,19 +154,25 @@ class RecentRoutesView extends GetView<HomeController> {
                             children: [
                               Text(
                                 route['from'],
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimaryLight,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
                                 ),
                               ),
                               const SizedBox(height: 24),
                               Text(
                                 route['to'],
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimaryLight,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
                                 ),
                               ),
                             ],
@@ -194,10 +199,13 @@ class RecentRoutesView extends GetView<HomeController> {
                             const SizedBox(height: 4),
                             Text(
                               route['cost'],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimaryLight,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.color,
                               ),
                             ),
                           ],
@@ -231,10 +239,10 @@ class RecentRoutesView extends GetView<HomeController> {
             ),
           ),
           Material(
-            color: AppColors.backgroundLight,
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: InkWell(
               onTap: () {
-                Get.toNamed(Routes.ROUTE_PLANNER, arguments: {
+                Get.toNamed(Routes.routePlanner, arguments: {
                   'from': route['from'],
                   'to': route['to'],
                   'mode': route['mode'],
@@ -291,8 +299,15 @@ class RecentRoutesView extends GetView<HomeController> {
         icon = Icons.directions_bus;
         break;
       default:
-        color = AppColors.textSecondaryLight;
+        color = Theme.of(Get.context!)
+            .disabledColor; // Use Get.context for now or pass context
         icon = Icons.directions;
+    }
+
+    // Fix for Car color in Dark Mode if using AppColors.carColor (which might be black)
+    if (mode.toLowerCase() == 'car' &&
+        Theme.of(Get.context!).brightness == Brightness.dark) {
+      color = Colors.white;
     }
 
     return Container(

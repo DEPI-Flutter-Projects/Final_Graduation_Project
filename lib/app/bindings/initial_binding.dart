@@ -5,6 +5,7 @@ import '../data/services/vehicle_service.dart';
 import '../data/services/deep_link_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/services/theme_service.dart';
+import '../data/services/pricing_service.dart';
 
 import '../modules/settings/settings_controller.dart';
 import '../modules/profile/profile_controller.dart';
@@ -19,6 +20,7 @@ class InitialBinding extends Bindings {
     Get.put<VehicleService>(VehicleService(), permanent: true);
     Get.put(ThemeService());
     Get.putAsync(() => NotificationService().init());
+    Get.putAsync(() => PricingService().init());
     Get.putAsync(() => DeepLinkService().init());
   }
 }

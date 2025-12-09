@@ -9,19 +9,21 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Plan New Route',
           style: TextStyle(
-            color: AppColors.textPrimaryLight,
+            color: theme.textTheme.titleLarge?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
+        iconTheme: theme.iconTheme,
         centerTitle: true,
       ),
       body: SafeArea(
@@ -31,13 +33,12 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
-              const Text(
+              Text(
                 'Transportation',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimaryLight,
+                  color: theme.textTheme.titleMedium?.color,
                 ),
               ),
               const SizedBox(height: 12),
@@ -63,8 +64,6 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                     ],
                   )),
               const SizedBox(height: 24),
-
-              
               Obx(() {
                 if (controller.selectedTransportMode.value == 'Car') {
                   return _buildCarOptions();
@@ -74,12 +73,10 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                 return const SizedBox.shrink();
               }),
               const SizedBox(height: 24),
-
-              
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: const [
                     BoxShadow(
@@ -92,29 +89,27 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.route, size: 20, color: AppColors.primary),
-                        SizedBox(width: 8),
+                        const Icon(Icons.route, size: 20, color: AppColors.primary),
+                        const SizedBox(width: 8),
                         Text(
                           'Route Details',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimaryLight,
+                            color: theme.textTheme.titleMedium?.color,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
-
-                    
-                    const Text(
+                    Text(
                       'Start Location',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondaryLight,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -155,7 +150,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                           ],
                         ),
                         filled: true,
-                        fillColor: AppColors.backgroundLight,
+                        fillColor: theme.scaffoldBackgroundColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -165,8 +160,6 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    
                     Obx(() => controller.stops.length < 5
                         ? Center(
                             child: OutlinedButton.icon(
@@ -177,9 +170,9 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                                 style: const TextStyle(fontSize: 13),
                               ),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                side:
-                                    const BorderSide(color: AppColors.primary),
+                                foregroundColor: theme.colorScheme.primary,
+                                side: BorderSide(
+                                    color: theme.colorScheme.primary),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -189,8 +182,6 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                             ),
                           )
                         : const SizedBox.shrink()),
-
-                    
                     Obx(() => Column(
                           children:
                               controller.stops.asMap().entries.map((entry) {
@@ -226,7 +217,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                                     ],
                                   ),
                                   filled: true,
-                                  fillColor: AppColors.backgroundLight,
+                                  fillColor: theme.scaffoldBackgroundColor,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide.none,
@@ -238,16 +229,13 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                             );
                           }).toList(),
                         )),
-
                     const SizedBox(height: 16),
-
-                    
-                    const Text(
+                    Text(
                       'End Location',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondaryLight,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -266,7 +254,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                           tooltip: 'Pick on Map',
                         ),
                         filled: true,
-                        fillColor: AppColors.backgroundLight,
+                        fillColor: theme.scaffoldBackgroundColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -276,8 +264,6 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    
                     SizedBox(
                       width: double.infinity,
                       child: Obx(() => ElevatedButton(
@@ -319,15 +305,12 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: const [
                     BoxShadow(
@@ -339,9 +322,9 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                 ),
                 child: Obx(() {
                   if (controller.routeResult.value == null) {
-                    return const Column(
+                    return Column(
                       children: [
-                        Text(
+                        const Text(
                           'Route Results',
                           style: TextStyle(
                             fontSize: 16,
@@ -349,18 +332,18 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                             color: AppColors.textPrimaryLight,
                           ),
                         ),
-                        SizedBox(height: 24),
-                        Icon(
+                        const SizedBox(height: 24),
+                        const Icon(
                           Icons.alt_route_outlined,
                           size: 64,
                           color: AppColors.textTertiaryLight,
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           'Enter start and end locations to calculate route',
                           style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.textSecondaryLight,
+                            color: theme.textTheme.bodyMedium?.color,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -368,16 +351,15 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                     );
                   }
 
-                  
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Route Results',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimaryLight,
+                          color: theme.textTheme.titleMedium?.color,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -397,7 +379,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                           icon: const Icon(Icons.navigation),
                           label: const Text('Start Navigation'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0F172A),
+                            backgroundColor: theme.colorScheme.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -412,8 +394,8 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                         child: OutlinedButton(
                           onPressed: controller.scrollToTop,
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.textPrimaryLight,
-                            side: BorderSide(color: Colors.grey.shade300),
+                            foregroundColor: theme.textTheme.bodyMedium?.color,
+                            side: BorderSide(color: theme.dividerColor),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -429,16 +411,18 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                         child: ElevatedButton(
                           onPressed: controller.shareRoute,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade100,
-                            foregroundColor: AppColors.textPrimaryLight,
+                            backgroundColor: theme.scaffoldBackgroundColor,
+                            foregroundColor: theme.textTheme.bodyLarge?.color,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Share Route',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          child: Text('Share Route',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.textTheme.bodyLarge?.color)),
                         ),
                       ),
                     ],
@@ -453,6 +437,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
   }
 
   Widget _buildTransportCard(String title, IconData icon, bool isSelected) {
+    final theme = Get.theme;
     return Expanded(
       child: GestureDetector(
         onTap: () => controller.setTransportMode(title),
@@ -460,11 +445,12 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : Colors.white,
+                ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                : theme.cardColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppColors.primary : Colors.grey.shade200,
+              color:
+                  isSelected ? theme.colorScheme.primary : theme.dividerColor,
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -477,7 +463,9 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? AppColors.primary : Colors.grey,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.textTheme.bodyMedium?.color,
                 ),
               ),
             ],
@@ -488,19 +476,23 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
   }
 
   Widget _buildCarOptions() {
+    final theme = Get.theme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Select Vehicle',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: theme.textTheme.titleMedium?.color,
+            ),
           ),
           const SizedBox(height: 12),
           Obx(() => InkWell(
@@ -510,12 +502,12 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: controller.selectedVehicle.value != null
-                        ? AppColors.primary.withValues(alpha: 0.05)
-                        : Colors.grey.shade50,
+                        ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                        : theme.cardColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: controller.selectedVehicle.value != null
-                          ? AppColors.primary
+                          ? theme.colorScheme.primary
                           : Colors.transparent,
                       width: 1.5,
                     ),
@@ -548,8 +540,8 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: controller.selectedVehicle.value != null
-                                    ? AppColors.textPrimaryLight
-                                    : Colors.grey.shade600,
+                                    ? theme.textTheme.bodyLarge?.color
+                                    : theme.textTheme.bodyMedium?.color,
                               ),
                             ),
                             if (controller.selectedVehicle.value != null)
@@ -557,14 +549,14 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                                 '${controller.selectedVehicle.value!['efficiency']} KM/L • ${controller.selectedVehicle.value!['fuel']}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.grey.shade600,
+                                  color: theme.textTheme.bodySmall?.color,
                                 ),
                               ),
                           ],
                         ),
                       ),
                       Icon(Icons.arrow_forward_ios,
-                          size: 16, color: Colors.grey.shade400),
+                          size: 16, color: theme.disabledColor),
                     ],
                   ),
                 ),
@@ -575,12 +567,13 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
   }
 
   Widget _buildMetroOptions() {
+    final theme = Get.theme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,6 +598,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
   }
 
   Widget _buildExpandedPreference(String label) {
+    final theme = Get.theme;
     return Expanded(
       child: Obx(() {
         final isSelected = controller.metroPreference.value == label;
@@ -619,13 +613,16 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isSelected ? AppColors.primary : Colors.grey.shade300,
+                color:
+                    isSelected ? theme.colorScheme.primary : theme.dividerColor,
               ),
             ),
             child: Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.primary : Colors.black,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.textTheme.bodyMedium?.color,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 12,
               ),
@@ -640,6 +637,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
   }
 
   Widget _buildResultRow(String label, String value) {
+    final theme = Get.theme;
     String displayValue = value;
 
     if (label == 'Estimated Cost') {
@@ -653,7 +651,7 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
 
         displayValue = '$currency ${(cost * rate).toStringAsFixed(2)}';
       } catch (e) {
-        
+        // Ignored
       }
     }
 
@@ -664,17 +662,17 @@ class RoutePlannerView extends GetView<RoutePlannerController> {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondaryLight,
+              color: theme.textTheme.bodyMedium?.color,
             ),
           ),
           Text(
             displayValue,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimaryLight,
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
         ],

@@ -29,32 +29,29 @@ class AuthController extends GetxController {
   String? _lastAttemptedEmail;
   String? _lastAttemptedPassword;
 
-  
   final RxInt resetCooldown = 0.obs;
   Timer? _cooldownTimer;
 
   Future<void> submit() async {
     if (!formKey.currentState!.validate()) {
-      shakeTrigger.value++; 
+      shakeTrigger.value++;
       return;
     }
 
-    if (isLoading.value) return; 
+    if (isLoading.value) return;
 
     final email = emailController.text.trim();
     final password = passwordController.text;
     final name = nameController.text.trim();
 
-    
     if (_lastAttemptedEmail == email && _lastAttemptedPassword == password) {
-      shakeTrigger.value++; 
+      shakeTrigger.value++;
       return;
     }
 
     isLoading.value = true;
     try {
       if (isLoginMode.value) {
-        
         final response = await Supabase.instance.client.auth.signInWithPassword(
           email: email,
           password: password,
@@ -64,45 +61,39 @@ class AuthController extends GetxController {
           return;
         }
       } else {
-        
         final response = await Supabase.instance.client.auth.signUp(
           email: email,
           password: password,
           data: {'full_name': name},
         );
 
-        
         if (response.session == null && response.user != null) {
           AppSnackbars.showInfo(
             'Success',
             'Account created! Please check your email to confirm your account before logging in.',
           );
-          isLoginMode.value = true; 
-          return; 
+          isLoginMode.value = true;
+          return;
         }
       }
 
-      
       _lastAttemptedEmail = null;
       _lastAttemptedPassword = null;
 
-      
       if (Get.isRegistered<ProfileController>()) {
         await ProfileController.to.loadUserProfile();
       }
 
-      Get.offAllNamed(Routes.MAIN);
+      Get.offAllNamed(Routes.main);
       AppSnackbars.showSuccess(
         'Success',
         isLoginMode.value ? 'Welcome back!' : 'Account created successfully!',
       );
     } on AuthException catch (e) {
-      
       debugPrint('Auth error: ${e.message}, Status: ${e.statusCode}');
 
       String errorMessage = e.message;
 
-      
       if (e.message.toLowerCase().contains('invalid') ||
           e.message.toLowerCase().contains('credentials')) {
         errorMessage =
@@ -140,7 +131,7 @@ class AuthController extends GetxController {
     Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       final event = data.event;
       if (event == AuthChangeEvent.passwordRecovery) {
-        Get.toNamed(Routes.RESET_PASSWORD);
+        Get.toNamed(Routes.resetPassword);
       } else if (event == AuthChangeEvent.signedIn) {
         if (Get.isRegistered<ProfileController>()) {
           ProfileController.to.loadUserProfile();
@@ -174,13 +165,13 @@ class AuthController extends GetxController {
         'Email Sent',
         'Check your email for the password reset link.',
       );
-      startCooldown(60); 
-      Get.back(); 
+      startCooldown(60);
+      Get.back();
     } on AuthException catch (e) {
       if (e.statusCode == '429' ||
           e.message.toLowerCase().contains('rate limit') ||
           e.code == 'over_email_send_rate_limit') {
-        startCooldown(60); 
+        startCooldown(60);
         AppSnackbars.showError(
           'Too Many Attempts',
           'Please wait a minute before requesting another reset link.',
@@ -220,7 +211,7 @@ class AuthController extends GetxController {
           'Success',
           'Password updated successfully! Please login with your new password.',
         );
-        Get.offAllNamed(Routes.AUTH);
+        Get.offAllNamed(Routes.auth);
       }
     } catch (e) {
       AppSnackbars.showError('Error', 'Failed to reset password: $e');
@@ -236,8 +227,6 @@ class AuthController extends GetxController {
         OAuthProvider.google,
         redirectTo: 'io.supabase.elmoshwar://login-callback',
       );
-      
-      
     } catch (e) {
       AppSnackbars.showError('Error', 'Google Sign-In failed: $e');
       isLoading.value = false;
@@ -262,7 +251,7 @@ class AuthController extends GetxController {
     if (Get.isRegistered<ProfileController>()) {
       ProfileController.to.clearProfile();
     }
-    Get.offAllNamed(Routes.AUTH);
+    Get.offAllNamed(Routes.auth);
   }
 
   @override

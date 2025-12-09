@@ -18,12 +18,10 @@ class RouteDetailsController extends GetxController {
     super.onInit();
     if (Get.arguments != null) {
       route.value = Get.arguments as Map<String, dynamic>;
-      
+
       if (route.value.containsKey('is_favorite')) {
         isFavorite.value = route.value['is_favorite'] ?? false;
       } else {
-        
-        
         _checkFavoriteStatus();
       }
     }
@@ -60,7 +58,6 @@ class RouteDetailsController extends GetxController {
 
       isFavorite.value = newStatus;
 
-      
       if (Get.isRegistered<HomeController>()) {
         Get.find<HomeController>().loadRecentRoutes();
       }
@@ -96,25 +93,14 @@ class RouteDetailsController extends GetxController {
   }
 
   void _navigateToPlanner(Map<String, dynamic> args) {
-    
     if (Get.isRegistered<RoutePlannerController>()) {
       Get.find<RoutePlannerController>().setRouteArgs(args);
     }
 
-    
-    
     if (Get.isRegistered<MainLayoutController>()) {
-      Get.find<MainLayoutController>()
-          .changePage(1); 
-      
-      
-      
-      
+      Get.find<MainLayoutController>().changePage(1);
     }
 
-    
-    
-    
-    Get.toNamed(Routes.ROUTE_PLANNER, arguments: args);
+    Get.toNamed(Routes.routePlanner, arguments: args);
   }
 }

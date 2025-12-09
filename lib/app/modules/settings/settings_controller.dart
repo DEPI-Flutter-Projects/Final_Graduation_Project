@@ -8,29 +8,23 @@ import 'views/privacy_policy_view.dart';
 import 'views/terms_of_service_view.dart';
 
 class SettingsController extends GetxController {
-  
   final defaultTransportMode = 'Car'.obs;
   final distanceUnit = 'KM'.obs;
   final currency = 'EGP'.obs;
   final language = 'English'.obs;
   final darkMode = false.obs;
 
-  
   final routeAlerts = true.obs;
   final savingsAlerts = true.obs;
-  
 
-  
   final exchangeRate = 1.0.obs;
 
   final isLoading = false.obs;
 
-  
   final isCurrentPasswordVisible = false.obs;
   final isNewPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
 
-  
   final currentPasswordError = ''.obs;
   final newPasswordError = ''.obs;
 
@@ -72,7 +66,6 @@ class SettingsController extends GetxController {
         savingsAlerts.value = response['savings_alerts'] ?? true;
         exchangeRate.value = (response['exchange_rate'] ?? 1.0).toDouble();
 
-        
         Get.changeThemeMode(darkMode.value ? ThemeMode.dark : ThemeMode.light);
       }
     } catch (e) {
@@ -102,14 +95,13 @@ class SettingsController extends GetxController {
     }
   }
 
-  
   void editProfile() {
     Get.toNamed('/profile');
   }
 
   void changePassword() {
     resetPasswordFields();
-    Get.toNamed(Routes.CHANGE_PASSWORD);
+    Get.toNamed(Routes.changePassword);
   }
 
   Future<void> updatePassword(
@@ -117,14 +109,12 @@ class SettingsController extends GetxController {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null || user.email == null) return;
 
-    
     currentPasswordError.value = '';
     newPasswordError.value = '';
 
     isLoading.value = true;
 
     try {
-      
       final authResponse =
           await Supabase.instance.client.auth.signInWithPassword(
         email: user.email!,
@@ -137,14 +127,12 @@ class SettingsController extends GetxController {
         return;
       }
 
-      
       await Supabase.instance.client.auth.updateUser(
         UserAttributes(password: newPassword),
       );
 
       isLoading.value = false;
 
-      
       Get.dialog(
         const SuccessDialog(),
         barrierDismissible: false,
@@ -161,7 +149,6 @@ class SettingsController extends GetxController {
       } else if (e.message.toLowerCase().contains('password')) {
         newPasswordError.value = e.message;
       } else {
-        
         newPasswordError.value = e.message;
       }
     } catch (e) {
@@ -182,7 +169,6 @@ class SettingsController extends GetxController {
           ElevatedButton(
             onPressed: () {
               Get.back();
-              
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Delete'),
@@ -192,7 +178,6 @@ class SettingsController extends GetxController {
     );
   }
 
-  
   Future<void> setDefaultTransportMode(String mode) async {
     defaultTransportMode.value = mode;
     await _saveSettings();
@@ -206,7 +191,6 @@ class SettingsController extends GetxController {
   Future<void> setCurrency(String curr) async {
     currency.value = curr;
 
-    
     if (curr == 'EGP') {
       exchangeRate.value = 1.0;
     } else {
@@ -230,7 +214,6 @@ class SettingsController extends GetxController {
     await _saveSettings();
   }
 
-  
   Future<void> toggleRouteAlerts(bool value) async {
     routeAlerts.value = value;
     await _saveSettings();
@@ -241,7 +224,6 @@ class SettingsController extends GetxController {
     await _saveSettings();
   }
 
-  
   void clearCache() {
     Get.dialog(
       AlertDialog(
@@ -260,12 +242,9 @@ class SettingsController extends GetxController {
     Get.to(() => const PrivacyPolicyView());
   }
 
-  
   void openTerms() {
     Get.to(() => const TermsOfServiceView());
   }
 
-  void contactSupport() {
-    
-  }
+  void contactSupport() {}
 }

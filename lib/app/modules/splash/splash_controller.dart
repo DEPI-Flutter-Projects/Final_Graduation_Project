@@ -11,12 +11,12 @@ class SplashController extends GetxController {
   }
 
   void _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 3)); 
+    await Future.delayed(const Duration(seconds: 3));
     final session = Supabase.instance.client.auth.currentSession;
     if (session != null) {
-      Get.offAllNamed(Routes.MAIN);
+      Get.offAllNamed(Routes.main);
     } else {
-      Get.offAllNamed(Routes.ONBOARDING);
+      Get.offAllNamed(Routes.onboarding);
     }
   }
 }

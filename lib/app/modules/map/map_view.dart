@@ -10,14 +10,15 @@ class MapView extends GetView<app_map.MapController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor ?? Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Map View',
           style: TextStyle(
-            color: AppColors.textPrimaryLight,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -27,9 +28,6 @@ class MapView extends GetView<app_map.MapController> {
       body: Stack(
         children: [
           Obx(() {
-            
-            
-            
             return FlutterMap(
               mapController: controller.mapController,
               options: MapOptions(
@@ -45,7 +43,6 @@ class MapView extends GetView<app_map.MapController> {
                   subdomains: const ['a', 'b', 'c'],
                   userAgentPackageName: 'com.elmoshwar.app',
                 ),
-                
                 PolylineLayer(
                   polylines: [
                     Polyline(
@@ -55,7 +52,6 @@ class MapView extends GetView<app_map.MapController> {
                     ),
                   ],
                 ),
-                
                 MarkerLayer(
                   markers: controller.markers.asMap().entries.map((entry) {
                     final index = entry.key;
@@ -91,7 +87,6 @@ class MapView extends GetView<app_map.MapController> {
                     );
                   }).toList(),
                 ),
-                
                 MarkerLayer(
                   markers: [
                     Marker(
@@ -113,8 +108,6 @@ class MapView extends GetView<app_map.MapController> {
               ],
             );
           }),
-
-          
           Positioned(
             top: 16,
             right: 16,
@@ -124,16 +117,16 @@ class MapView extends GetView<app_map.MapController> {
                 FloatingActionButton.small(
                   heroTag: 'rotate_map',
                   onPressed: controller.rotateMap,
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.textPrimaryLight,
+                  backgroundColor: Theme.of(context).cardColor,
+                  foregroundColor: Theme.of(context).iconTheme.color,
                   child: const Icon(Icons.rotate_right),
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton.small(
                   heroTag: 'style_toggle',
                   onPressed: controller.toggleMapStyle,
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.textPrimaryLight,
+                  backgroundColor: Theme.of(context).cardColor,
+                  foregroundColor: Theme.of(context).iconTheme.color,
                   child: const Icon(Icons.layers_outlined),
                 ),
                 const SizedBox(height: 8),
@@ -142,10 +135,10 @@ class MapView extends GetView<app_map.MapController> {
                       onPressed: controller.toggleTracking,
                       backgroundColor: controller.isTracking.value
                           ? AppColors.primary
-                          : Colors.white,
+                          : Theme.of(context).cardColor,
                       foregroundColor: controller.isTracking.value
                           ? Colors.white
-                          : AppColors.textPrimaryLight,
+                          : Theme.of(context).iconTheme.color,
                       child: Icon(controller.isTracking.value
                           ? Icons.gps_fixed
                           : Icons.gps_not_fixed),
@@ -154,15 +147,13 @@ class MapView extends GetView<app_map.MapController> {
                 FloatingActionButton.small(
                   heroTag: 'clear_markers',
                   onPressed: controller.clearMarkers,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).cardColor,
                   foregroundColor: AppColors.error,
                   child: const Icon(Icons.delete_outline),
                 ),
               ],
             ),
           ),
-
-          
           Positioned(
             bottom: 30,
             left: 20,
@@ -177,11 +168,13 @@ class MapView extends GetView<app_map.MapController> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: Theme.of(context)
+                            .shadowColor
+                            .withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -197,15 +190,17 @@ class MapView extends GetView<app_map.MapController> {
                             Icons.timer_outlined,
                             controller.remainingTime.value,
                             'Time',
+                            context,
                           ),
                           Container(
                               height: 40,
                               width: 1,
-                              color: Colors.grey.shade300),
+                              color: Theme.of(context).dividerColor),
                           _buildInfoItem(
                             Icons.directions_car_outlined,
                             controller.remainingDistance.value,
                             'Distance',
+                            context,
                           ),
                         ],
                       ),
@@ -237,7 +232,9 @@ class MapView extends GetView<app_map.MapController> {
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String value, String label) {
+  Widget _buildInfoItem(
+      IconData icon, String value, String label, BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -245,17 +242,17 @@ class MapView extends GetView<app_map.MapController> {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimaryLight,
+            color: theme.textTheme.bodyLarge?.color,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondaryLight,
+            color: theme.textTheme.bodySmall?.color,
           ),
         ),
       ],

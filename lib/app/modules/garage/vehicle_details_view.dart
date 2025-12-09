@@ -11,7 +11,8 @@ class VehicleDetailsView extends GetView<GarageController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      
+      final theme = Theme.of(context);
+
       final updatedVehicle = controller.userVehicles.firstWhere(
         (v) => v['id'] == vehicle['id'],
         orElse: () => vehicle,
@@ -22,11 +23,12 @@ class VehicleDetailsView extends GetView<GarageController> {
       final isDefault = updatedVehicle['is_default'] == true;
 
       return Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          title: Text('${brand['name']} ${model['name']}'),
+          title: Text('${brand['name']} ${model['name']}',
+              style: theme.textTheme.titleLarge),
           centerTitle: true,
-          backgroundColor: Colors.white,
+          backgroundColor: theme.scaffoldBackgroundColor,
           elevation: 0,
           actions: [
             IconButton(
@@ -43,7 +45,6 @@ class VehicleDetailsView extends GetView<GarageController> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -71,10 +72,10 @@ class VehicleDetailsView extends GetView<GarageController> {
                     const SizedBox(height: 16),
                     Text(
                       '${brand['name']} ${model['name']}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimaryLight,
+                        color: theme.textTheme.titleLarge?.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -82,9 +83,9 @@ class VehicleDetailsView extends GetView<GarageController> {
                       model['engine_capacity'] != null
                           ? '${updatedVehicle['year']} • ${model['engine_capacity']}cc'
                           : '${updatedVehicle['year']}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.textSecondaryLight,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -98,8 +99,6 @@ class VehicleDetailsView extends GetView<GarageController> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              
               if (!isDefault)
                 SizedBox(
                   width: double.infinity,
@@ -143,16 +142,13 @@ class VehicleDetailsView extends GetView<GarageController> {
                     ],
                   ),
                 ),
-
               const SizedBox(height: 16),
-
-              
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: theme.dividerColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,6 +187,7 @@ class VehicleDetailsView extends GetView<GarageController> {
   }
 
   Widget _buildInfoRow(String label, String value) {
+    final theme = Get.theme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -198,13 +195,13 @@ class VehicleDetailsView extends GetView<GarageController> {
         children: [
           Text(
             label,
-            style: const TextStyle(color: AppColors.textSecondaryLight),
+            style: TextStyle(color: theme.textTheme.bodyMedium?.color),
           ),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimaryLight,
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
         ],
@@ -213,19 +210,20 @@ class VehicleDetailsView extends GetView<GarageController> {
   }
 
   Widget _buildBulletPoint(String text) {
+    final theme = Get.theme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• ',
+          Text('• ',
               style: TextStyle(
-                  color: AppColors.textSecondaryLight,
+                  color: theme.textTheme.bodyMedium?.color,
                   fontWeight: FontWeight.bold)),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(color: AppColors.textSecondaryLight),
+              style: TextStyle(color: theme.textTheme.bodyMedium?.color),
             ),
           ),
         ],
@@ -236,9 +234,11 @@ class VehicleDetailsView extends GetView<GarageController> {
   void _confirmDelete(BuildContext context) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Vehicle'),
-        content: const Text(
-            'Are you sure you want to delete this vehicle? This action cannot be undone.'),
+        title: Text('Delete Vehicle', style: Get.theme.textTheme.titleLarge),
+        backgroundColor: Get.theme.cardColor,
+        content: Text(
+            'Are you sure you want to delete this vehicle? This action cannot be undone.',
+            style: Get.theme.textTheme.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -246,9 +246,9 @@ class VehicleDetailsView extends GetView<GarageController> {
           ),
           TextButton(
             onPressed: () {
-              Get.back(); 
+              Get.back();
               controller.deleteVehicle(vehicle['id']);
-              Get.back(); 
+              Get.back();
             },
             child:
                 const Text('Delete', style: TextStyle(color: AppColors.error)),

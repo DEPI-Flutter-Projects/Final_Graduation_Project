@@ -8,28 +8,30 @@ import 'profile_controller.dart';
 import 'views/edit_profile_view.dart';
 import 'views/badges_view.dart';
 import 'views/spin_wheel_dialog.dart';
-import '../../core/theme/app_colors.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('My Profile',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('My Profile',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline_rounded,
-                color: AppColors.primary),
+            icon: Icon(Icons.info_outline_rounded,
+                color: theme.colorScheme.primary),
             onPressed: () {
               Get.dialog(
                 Dialog(
+                  backgroundColor: theme.cardColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   child: Padding(
@@ -37,32 +39,42 @@ class ProfileView extends GetView<ProfileController> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Gamification Guide 🎮',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          style: theme.textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 16),
-                        _buildInfoItem(Icons.star, 'Earn XP',
-                            'Complete daily challenges and trips to earn XP and level up!'),
+                        _buildInfoItem(
+                            Icons.star,
+                            'Earn XP',
+                            'Complete daily challenges and trips to earn XP and level up!',
+                            theme),
                         const SizedBox(height: 12),
-                        _buildInfoItem(Icons.military_tech, 'Collect Badges',
-                            'Unlock unique badges by achieving milestones.'),
+                        _buildInfoItem(
+                            Icons.military_tech,
+                            'Collect Badges',
+                            'Unlock unique badges by achieving milestones.',
+                            theme),
                         const SizedBox(height: 12),
-                        _buildInfoItem(Icons.casino, 'Daily Spin',
-                            'Spin the wheel every 24 hours for free rewards.'),
+                        _buildInfoItem(
+                            Icons.casino,
+                            'Daily Spin',
+                            'Spin the wheel every 24 hours for free rewards.',
+                            theme),
                         const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () => Get.back(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
+                              backgroundColor: theme.colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
                             ),
-                            child: const Text('Got it!',
-                                style: TextStyle(color: Colors.white)),
+                            child: Text('Got it!',
+                                style: TextStyle(
+                                    color: theme.colorScheme.onPrimary)),
                           ),
                         ),
                       ],
@@ -73,62 +85,43 @@ class ProfileView extends GetView<ProfileController> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
+            icon: Icon(Icons.logout_rounded, color: theme.colorScheme.error),
             onPressed: controller.logout,
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            
-            _buildProfileHeader(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildDailySpinCard(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildQuickStats(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildDailyChallengesSection(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildBadgesSection(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildEnvironmentalImpact(context),
-
-            const SizedBox(height: 24),
-
-            
-            _buildPersonalInfo(context),
-
-            const SizedBox(height: 40),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              _buildProfileHeader(context, theme),
+              const SizedBox(height: 24),
+              _buildDailySpinCard(context, theme),
+              const SizedBox(height: 24),
+              _buildQuickStats(context, theme),
+              const SizedBox(height: 24),
+              _buildDailyChallengesSection(context, theme),
+              const SizedBox(height: 24),
+              _buildBadgesSection(context, theme),
+              const SizedBox(height: 24),
+              _buildEnvironmentalImpact(context, theme),
+              const SizedBox(height: 24),
+              _buildPersonalInfo(context, theme),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
+  Widget _buildProfileHeader(BuildContext context, ThemeData theme) {
     return Column(
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
-            
             Obx(() {
               double percent = 0.0;
               if (controller.nextLevelXp.value > 0) {
@@ -139,14 +132,12 @@ class ProfileView extends GetView<ProfileController> {
                 lineWidth: 8.0,
                 percent: percent.clamp(0.0, 1.0),
                 circularStrokeCap: CircularStrokeCap.round,
-                backgroundColor: Colors.grey.shade200,
-                progressColor: AppColors.primary,
+                backgroundColor: theme.dividerColor.withValues(alpha: 0.1),
+                progressColor: theme.colorScheme.primary,
                 animation: true,
                 animationDuration: 1000,
               );
             }),
-
-            
             Obx(() {
               final avatarUrl = controller.userAvatarUrl.value;
               if (avatarUrl.startsWith('seed:')) {
@@ -158,7 +149,7 @@ class ProfileView extends GetView<ProfileController> {
               }
               return CircleAvatar(
                 radius: 55,
-                backgroundColor: Colors.grey.shade200,
+                backgroundColor: theme.disabledColor.withValues(alpha: 0.1),
                 backgroundImage:
                     avatarUrl.isNotEmpty && !avatarUrl.startsWith('seed:')
                         ? NetworkImage(avatarUrl)
@@ -168,26 +159,26 @@ class ProfileView extends GetView<ProfileController> {
                         controller.userName.value.isNotEmpty
                             ? controller.userName.value[0].toUpperCase()
                             : 'U',
-                        style: const TextStyle(
-                            fontSize: 40, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary),
                       )
                     : null,
               );
             }),
-
-            
             Positioned(
               bottom: 0,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: theme.cardColor, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: theme.shadowColor.withValues(alpha: 0.2),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -195,8 +186,8 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 child: Obx(() => Text(
                       'Lvl ${controller.level.value}',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -208,13 +199,14 @@ class ProfileView extends GetView<ProfileController> {
         const SizedBox(height: 16),
         Obx(() => Text(
               controller.userName.value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             )).animate().fadeIn().slideY(begin: 0.2, end: 0),
         Obx(() => Text(
               controller.levelName.value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
-                color: AppColors.primary,
+                color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1.2,
               ),
@@ -222,7 +214,8 @@ class ProfileView extends GetView<ProfileController> {
         const SizedBox(height: 8),
         Obx(() => Text(
               '${controller.currentXp.value} XP Total',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.textTheme.bodySmall?.color),
             )),
         const SizedBox(height: 16),
         OutlinedButton.icon(
@@ -233,8 +226,8 @@ class ProfileView extends GetView<ProfileController> {
           icon: const Icon(Icons.edit_outlined, size: 18),
           label: const Text('Edit Profile'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textPrimaryLight,
-            side: BorderSide(color: Colors.grey.shade300),
+            foregroundColor: theme.textTheme.bodyLarge?.color,
+            side: BorderSide(color: theme.dividerColor),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
@@ -243,7 +236,7 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildDailySpinCard(BuildContext context) {
+  Widget _buildDailySpinCard(BuildContext context, ThemeData theme) {
     return Obx(() {
       final canSpin = controller.canSpinWheel;
       return GestureDetector(
@@ -261,7 +254,10 @@ class ProfileView extends GetView<ProfileController> {
             gradient: LinearGradient(
               colors: canSpin
                   ? [Colors.purple.shade700, Colors.purple.shade400]
-                  : [Colors.grey.shade400, Colors.grey.shade300],
+                  : [
+                      theme.disabledColor,
+                      theme.disabledColor.withValues(alpha: 0.7)
+                    ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -338,12 +334,13 @@ class ProfileView extends GetView<ProfileController> {
     }).animate().fadeIn(delay: 300.ms).slideX(begin: 0.1, end: 0);
   }
 
-  Widget _buildQuickStats(BuildContext context) {
+  Widget _buildQuickStats(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Quick Stats',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text('Quick Stats',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         GridView.count(
           shrinkWrap: true,
@@ -354,31 +351,41 @@ class ProfileView extends GetView<ProfileController> {
           childAspectRatio: 1.4,
           children: [
             Obx(() => _buildStatBox(Icons.alt_route, '${controller.totalTrips}',
-                'Total Trips', Colors.blue)),
+                'Total Trips', Colors.blue, theme)),
             Obx(() => _buildStatBox(
                 Icons.trending_up,
                 'EGP ${controller.totalSavings.toStringAsFixed(0)}',
                 'Money Saved',
-                Colors.green)),
-            Obx(() => _buildStatBox(Icons.location_on_outlined,
-                '${controller.kmTraveled}', 'KM Traveled', Colors.purple)),
-            Obx(() => _buildStatBox(Icons.local_fire_department,
-                '${controller.currentStreak}', 'Day Streak', Colors.orange)),
+                Colors.green,
+                theme)),
+            Obx(() => _buildStatBox(
+                Icons.location_on_outlined,
+                '${controller.kmTraveled}',
+                'KM Traveled',
+                Colors.purple,
+                theme)),
+            Obx(() => _buildStatBox(
+                Icons.local_fire_department,
+                '${controller.currentStreak}',
+                'Day Streak',
+                Colors.orange,
+                theme)),
           ],
         ).animate().fadeIn(delay: 400.ms),
       ],
     );
   }
 
-  Widget _buildStatBox(IconData icon, String value, String label, Color color) {
+  Widget _buildStatBox(
+      IconData icon, String value, String label, Color color, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: theme.shadowColor.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -391,33 +398,37 @@ class ProfileView extends GetView<ProfileController> {
           const SizedBox(height: 8),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold, fontSize: 22),
           ),
           Text(
             label,
-            style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.disabledColor, fontSize: 12),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDailyChallengesSection(BuildContext context) {
+  Widget _buildDailyChallengesSection(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Daily Challenges',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text('Daily Challenges',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
         Obx(() {
           if (controller.activeChallenges.isEmpty) {
             return Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: theme.cardColor,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Center(child: Text('No active challenges today.')),
+              child: Text('No active challenges today.',
+                  style: theme.textTheme.bodyMedium),
             );
           }
 
@@ -437,14 +448,14 @@ class ProfileView extends GetView<ProfileController> {
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   border: isCompleted
                       ? Border.all(color: Colors.green.withValues(alpha: 0.5))
                       : null,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: theme.shadowColor.withValues(alpha: 0.03),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -457,12 +468,14 @@ class ProfileView extends GetView<ProfileController> {
                       decoration: BoxDecoration(
                         color: isCompleted
                             ? Colors.green.withValues(alpha: 0.1)
-                            : AppColors.primary.withValues(alpha: 0.1),
+                            : theme.colorScheme.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         _getIconData(challenge['icon'] ?? 'star'),
-                        color: isCompleted ? Colors.green : AppColors.primary,
+                        color: isCompleted
+                            ? Colors.green
+                            : theme.colorScheme.primary,
                         size: 24,
                       ),
                     ),
@@ -478,7 +491,9 @@ class ProfileView extends GetView<ProfileController> {
                               decoration: isCompleted
                                   ? TextDecoration.lineThrough
                                   : null,
-                              color: isCompleted ? Colors.grey : Colors.black87,
+                              color: isCompleted
+                                  ? theme.disabledColor
+                                  : theme.textTheme.bodyLarge?.color,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -486,10 +501,11 @@ class ProfileView extends GetView<ProfileController> {
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: percent,
-                              backgroundColor: Colors.grey.shade200,
+                              backgroundColor:
+                                  theme.dividerColor.withValues(alpha: 0.2),
                               color: isCompleted
                                   ? Colors.green
-                                  : AppColors.primary,
+                                  : theme.colorScheme.primary,
                               minHeight: 6,
                             ),
                           ),
@@ -499,8 +515,8 @@ class ProfileView extends GetView<ProfileController> {
                             children: [
                               Text(
                                 '$progress / $target',
-                                style: TextStyle(
-                                    color: Colors.grey.shade600, fontSize: 12),
+                                style: theme.textTheme.bodySmall
+                                    ?.copyWith(fontSize: 12),
                               ),
                               Text(
                                 '+${challenge['xp_reward']} XP',
@@ -530,14 +546,15 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildBadgesSection(BuildContext context) {
+  Widget _buildBadgesSection(BuildContext context, ThemeData theme) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Badges',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Badges',
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold)),
             TextButton(
               onPressed: () => Get.to(() => const BadgesView()),
               child: const Text('View All'),
@@ -552,12 +569,12 @@ class ProfileView extends GetView<ProfileController> {
               return Center(
                 child: Text(
                   'No badges yet. Start your journey!',
-                  style: TextStyle(color: Colors.grey.shade500),
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: theme.disabledColor),
                 ),
               );
             }
 
-            
             final sortedBadges =
                 List<Map<String, dynamic>>.from(controller.badges);
             sortedBadges.sort((a, b) {
@@ -575,7 +592,9 @@ class ProfileView extends GetView<ProfileController> {
                   width: 90,
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
-                    color: isEarned ? Colors.white : Colors.grey.shade50,
+                    color: isEarned
+                        ? theme.cardColor
+                        : theme.disabledColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isEarned
@@ -601,12 +620,14 @@ class ProfileView extends GetView<ProfileController> {
                         decoration: BoxDecoration(
                           color: isEarned
                               ? Colors.amber.withValues(alpha: 0.1)
-                              : Colors.grey.shade200,
+                              : theme.dividerColor.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _getIconData(badge['icon']),
-                          color: isEarned ? Colors.amber.shade700 : Colors.grey,
+                          color: isEarned
+                              ? Colors.amber.shade700
+                              : theme.disabledColor,
                           size: 24,
                         ),
                       ),
@@ -620,7 +641,9 @@ class ProfileView extends GetView<ProfileController> {
                             fontSize: 11,
                             fontWeight:
                                 isEarned ? FontWeight.bold : FontWeight.normal,
-                            color: isEarned ? Colors.black87 : Colors.grey,
+                            color: isEarned
+                                ? theme.textTheme.bodyLarge?.color
+                                : theme.disabledColor,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -637,15 +660,15 @@ class ProfileView extends GetView<ProfileController> {
     ).animate().fadeIn(delay: 500.ms);
   }
 
-  Widget _buildEnvironmentalImpact(BuildContext context) {
+  Widget _buildEnvironmentalImpact(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: theme.shadowColor.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -654,17 +677,18 @@ class ProfileView extends GetView<ProfileController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.eco_rounded, color: Colors.green),
-              SizedBox(width: 8),
+              const Icon(Icons.eco_rounded, color: Colors.green),
+              const SizedBox(width: 8),
               Text('Environmental Impact',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 8),
-          const Text('Your contribution to a greener Egypt',
-              style: TextStyle(color: Colors.grey, fontSize: 12)),
+          Text('Your contribution to a greener Egypt',
+              style: theme.textTheme.bodySmall),
           const SizedBox(height: 20),
           Row(
             children: [
@@ -673,7 +697,8 @@ class ProfileView extends GetView<ProfileController> {
                     Icons.forest,
                     '${controller.co2Saved.value.toStringAsFixed(1)} kg',
                     'CO₂ Reduced',
-                    Colors.green)),
+                    Colors.green,
+                    theme)),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -681,7 +706,8 @@ class ProfileView extends GetView<ProfileController> {
                     Icons.timer_outlined,
                     '${controller.timeSaved.value.toStringAsFixed(1)} hrs',
                     'Time Saved',
-                    Colors.blue)),
+                    Colors.blue,
+                    theme)),
               ),
             ],
           ),
@@ -691,7 +717,7 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   Widget _buildImpactItem(
-      IconData icon, String value, String label, Color color) {
+      IconData icon, String value, String label, Color color, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -709,22 +735,23 @@ class ProfileView extends GetView<ProfileController> {
           ),
           Text(
             label,
-            style: TextStyle(color: Colors.grey.shade700, fontSize: 12),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.textTheme.bodySmall?.color),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPersonalInfo(BuildContext context) {
+  Widget _buildPersonalInfo(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: theme.shadowColor.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -733,40 +760,45 @@ class ProfileView extends GetView<ProfileController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Personal Information',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text('Personal Information',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           Obx(() => _buildInfoRow(Icons.email_outlined,
-              controller.userEmail.value, 'Email Address')),
+              controller.userEmail.value, 'Email Address', theme)),
           const Divider(height: 32),
           Obx(() => _buildInfoRow(
               Icons.phone_outlined,
               controller.userPhone.value.isEmpty
                   ? 'Not provided'
                   : controller.userPhone.value,
-              'Phone Number')),
+              'Phone Number',
+              theme)),
           const Divider(height: 32),
           Obx(() => _buildInfoRow(
               Icons.location_on_outlined,
               controller.userLocation.value.isEmpty
                   ? 'Not provided'
                   : controller.userLocation.value,
-              'Location')),
+              'Location',
+              theme)),
         ],
       ),
     ).animate().fadeIn(delay: 700.ms);
   }
 
-  Widget _buildInfoRow(IconData icon, String value, String label) {
+  Widget _buildInfoRow(
+      IconData icon, String value, String label, ThemeData theme) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: theme.dividerColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: Colors.grey.shade700, size: 20),
+          child: Icon(icon,
+              color: theme.iconTheme.color?.withValues(alpha: 0.7), size: 20),
         ),
         const SizedBox(width: 16),
         Column(
@@ -775,19 +807,19 @@ class ProfileView extends GetView<ProfileController> {
             Text(value,
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-            Text(label,
-                style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            Text(label, style: theme.textTheme.bodySmall),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String title, String description) {
+  Widget _buildInfoItem(
+      IconData icon, String title, String description, ThemeData theme) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.primary, size: 20),
+        Icon(icon, color: theme.colorScheme.primary, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -795,8 +827,7 @@ class ProfileView extends GetView<ProfileController> {
             children: [
               Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 2),
-              Text(description,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+              Text(description, style: theme.textTheme.bodySmall),
             ],
           ),
         ),

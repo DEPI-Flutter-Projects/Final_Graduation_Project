@@ -17,15 +17,16 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: theme.scaffoldBackgroundColor,
       drawer: const AppDrawer(),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 240,
             pinned: true,
-            backgroundColor: AppColors.primary,
+            backgroundColor: theme.colorScheme.primary,
             elevation: 0,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
@@ -35,10 +36,11 @@ class HomeView extends GetView<HomeController> {
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.menu, color: Colors.white, size: 20),
+                  child: Icon(Icons.menu,
+                      color: theme.colorScheme.onPrimary, size: 20),
                 ),
                 onPressed: () => Scaffold.of(context).openDrawer(),
               ),
@@ -48,13 +50,13 @@ class HomeView extends GetView<HomeController> {
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:
-                      const Icon(Icons.favorite, color: Colors.white, size: 20),
+                  child: Icon(Icons.favorite,
+                      color: theme.colorScheme.onPrimary, size: 20),
                 ),
-                onPressed: () => Get.toNamed(Routes.FAVORITES),
+                onPressed: () => Get.toNamed(Routes.favorites),
               ),
               const SizedBox(width: 8),
               Stack(
@@ -69,7 +71,7 @@ class HomeView extends GetView<HomeController> {
                       child: const Icon(Icons.notifications_outlined,
                           color: Colors.white, size: 20),
                     ),
-                    onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
+                    onPressed: () => Get.toNamed(Routes.notifications),
                   ),
                   Obx(() {
                     final unreadCount =
@@ -110,8 +112,6 @@ class HomeView extends GetView<HomeController> {
                 ),
                 child: Stack(
                   children: [
-                    
-                    
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 70, 24, 20),
                       child: Column(
@@ -239,7 +239,7 @@ class HomeView extends GetView<HomeController> {
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: () => Get.toNamed(Routes.PROFILE),
+                                onTap: () => Get.toNamed(Routes.profile),
                                 child: Container(
                                   width: 60,
                                   height: 60,
@@ -332,7 +332,6 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   GestureDetector(
                     onTap: () {
                       Get.dialog(SavedDetailsDialog());
@@ -346,11 +345,11 @@ class HomeView extends GetView<HomeController> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.cardColor,
                           borderRadius: BorderRadius.circular(32),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
+                              color: theme.shadowColor.withValues(alpha: 0.05),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -358,8 +357,6 @@ class HomeView extends GetView<HomeController> {
                         ),
                         child: Stack(
                           children: [
-                            
-                            
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -370,13 +367,12 @@ class HomeView extends GetView<HomeController> {
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primary
+                                        color: theme.colorScheme.primary
                                             .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      child: const Icon(
-                                          Icons.account_balance_wallet,
-                                          color: AppColors.primary,
+                                      child: Icon(Icons.account_balance_wallet,
+                                          color: theme.colorScheme.primary,
                                           size: 24),
                                     ),
                                     Container(
@@ -427,7 +423,7 @@ class HomeView extends GetView<HomeController> {
                                 Text(
                                   'Total Saved',
                                   style: GoogleFonts.outfit(
-                                    color: AppColors.textSecondaryLight,
+                                    color: theme.textTheme.bodyMedium?.color,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -436,7 +432,7 @@ class HomeView extends GetView<HomeController> {
                                 Text(
                                   '$currency ${(controller.totalMoneySaved.value * rate).toStringAsFixed(2)}',
                                   style: GoogleFonts.outfit(
-                                    color: AppColors.textPrimaryLight,
+                                    color: theme.textTheme.bodyLarge?.color,
                                     fontSize: 42,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: -1,
@@ -446,7 +442,7 @@ class HomeView extends GetView<HomeController> {
                                 Text(
                                   'Tap for details',
                                   style: GoogleFonts.outfit(
-                                    color: AppColors.textTertiaryLight,
+                                    color: theme.textTheme.bodySmall?.color,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -458,14 +454,10 @@ class HomeView extends GetView<HomeController> {
                     }),
                   ),
                   const SizedBox(height: 32),
-
-                  
-                  const Text(
+                  Text(
                     'Quick Actions',
-                    style: TextStyle(
-                      fontSize: 18,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimaryLight,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -475,12 +467,12 @@ class HomeView extends GetView<HomeController> {
                       _buildQuickAction(
                         'Plan Trip',
                         Icons.map_outlined,
-                        AppColors.primary,
+                        theme.colorScheme.primary,
                         () {
                           if (Get.isRegistered<MainLayoutController>()) {
                             Get.find<MainLayoutController>().changePage(1);
                           } else {
-                            Get.toNamed(Routes.ROUTE_PLANNER);
+                            Get.toNamed(Routes.routePlanner);
                           }
                         },
                       ),
@@ -492,7 +484,7 @@ class HomeView extends GetView<HomeController> {
                           if (Get.isRegistered<MainLayoutController>()) {
                             Get.find<MainLayoutController>().changePage(2);
                           } else {
-                            Get.toNamed(Routes.MAP_VIEW);
+                            Get.toNamed(Routes.mapView);
                           }
                         },
                       ),
@@ -500,30 +492,26 @@ class HomeView extends GetView<HomeController> {
                         'Calculator',
                         Icons.calculate_outlined,
                         Colors.green,
-                        () => Get.toNamed(Routes.COST_CALCULATOR),
+                        () => Get.toNamed(Routes.costCalculator),
                       ),
                       _buildQuickAction(
                         'Garage',
                         Icons.directions_car_outlined,
                         Colors.purple,
-                        () => Get.toNamed(Routes.GARAGE),
+                        () => Get.toNamed(Routes.garage),
                       ),
                       _buildQuickAction(
                         'Optimize',
                         Icons.timeline,
                         Colors.teal,
-                        () => Get.toNamed(Routes.ROUTE_OPTIMIZER),
+                        () => Get.toNamed(Routes.routeOptimizer),
                       ),
                     ],
                   ),
                   const SizedBox(height: 32),
-
-                  
                   _buildSectionHeader(
                     'Recent Routes',
-                    onViewAll: () {
-                      Get.toNamed(Routes.RECENT_ROUTES);
-                    },
+                    onViewAll: () => Get.toNamed(Routes.recentRoutes),
                   ),
                   const SizedBox(height: 12),
                   Obx(() {
@@ -541,10 +529,7 @@ class HomeView extends GetView<HomeController> {
                       }).toList(),
                     );
                   }),
-
                   const SizedBox(height: 24),
-
-                  
                   _buildSmartSuggestionsHeader(),
                   const SizedBox(height: 12),
                   Obx(() => Column(
@@ -553,7 +538,7 @@ class HomeView extends GetView<HomeController> {
                                 _buildSuggestionCard(suggestion))
                             .toList(),
                       )),
-                  const SizedBox(height: 80), 
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
@@ -585,6 +570,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildQuickAction(
       String label, IconData icon, Color color, VoidCallback onTap) {
+    final theme = Get.theme;
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -593,11 +579,11 @@ class HomeView extends GetView<HomeController> {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.cardColor,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: theme.shadowColor.withValues(alpha: 0.05),
                   blurRadius: 15,
                   offset: const Offset(0, 5),
                 ),
@@ -608,10 +594,9 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(height: 12),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
+            style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondaryLight,
+              color: theme.textTheme.bodyMedium?.color,
             ),
           ),
         ],
@@ -620,15 +605,15 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildSectionHeader(String title, {VoidCallback? onViewAll}) {
+    final theme = Get.theme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimaryLight,
+            fontSize: 18,
           ),
         ),
         if (onViewAll != null)
@@ -637,7 +622,7 @@ class HomeView extends GetView<HomeController> {
             icon: const Icon(Icons.history, size: 16),
             label: const Text('View All', style: TextStyle(fontSize: 13)),
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.primary,
+              foregroundColor: theme.colorScheme.primary,
               padding: const EdgeInsets.symmetric(horizontal: 8),
             ),
           ),
@@ -647,7 +632,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildRouteCard(
       Map<String, dynamic> route, String currency, double rate) {
-    
+    final theme = Get.theme;
     double cost = 0;
     double saved = 0;
 
@@ -660,17 +645,17 @@ class HomeView extends GetView<HomeController> {
           route['saved'].toString().replaceAll(RegExp(r'[^0-9.]'), '');
       saved = double.parse(savedStr);
     } catch (e) {
-      
+      // Ignored
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: theme.shadowColor.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -681,28 +666,27 @@ class HomeView extends GetView<HomeController> {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () => Get.toNamed(Routes.ROUTE_DETAILS, arguments: route),
+          onTap: () => Get.toNamed(Routes.routeDetails, arguments: route),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Column(
                       children: [
-                        const Icon(Icons.circle,
-                            size: 12, color: AppColors.primary),
+                        Icon(Icons.circle,
+                            size: 12, color: theme.colorScheme.primary),
                         Container(
                           width: 2,
                           height: 24,
-                          color: AppColors.border,
+                          color: theme.dividerColor,
                           margin: const EdgeInsets.symmetric(vertical: 2),
                         ),
-                        const Icon(Icons.location_on,
-                            size: 12, color: AppColors.secondary),
+                        Icon(Icons.location_on,
+                            size: 12, color: theme.colorScheme.secondary),
                       ],
                     ),
                     const SizedBox(width: 12),
@@ -712,10 +696,9 @@ class HomeView extends GetView<HomeController> {
                         children: [
                           Text(
                             route['from'],
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimaryLight,
+                              fontSize: 14,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -723,10 +706,9 @@ class HomeView extends GetView<HomeController> {
                           const SizedBox(height: 12),
                           Text(
                             route['to'],
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimaryLight,
+                              fontSize: 14,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -737,18 +719,13 @@ class HomeView extends GetView<HomeController> {
                     const SizedBox(width: 8),
                     Text(
                       route['date'],
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textTertiaryLight,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Divider(height: 1, color: Color(0xFFF0F0F0)),
+                Divider(height: 1, color: theme.dividerColor),
                 const SizedBox(height: 16),
-                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -760,18 +737,16 @@ class HomeView extends GetView<HomeController> {
                           children: [
                             Text(
                               'Cost',
-                              style: TextStyle(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontSize: 10,
-                                color: Colors.grey.shade500,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
                               '$currency ${(cost * rate).toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: theme.textTheme.titleSmall?.copyWith(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimaryLight,
                               ),
                             ),
                           ],
@@ -837,7 +812,8 @@ class HomeView extends GetView<HomeController> {
         icon = Icons.directions_bus;
         break;
       default:
-        color = AppColors.textSecondaryLight;
+        color = Get.theme.textTheme.bodySmall?.color ??
+            AppColors.textSecondaryLight;
         icon = Icons.directions;
     }
 
@@ -867,6 +843,7 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildSmartSuggestionsHeader() {
+    final theme = Get.theme;
     return Row(
       children: [
         Container(
@@ -882,23 +859,19 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         const SizedBox(width: 8),
-        const Column(
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Smart Suggestions',
-              style: TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimaryLight,
+                fontSize: 18,
               ),
             ),
             Text(
               'Smart tips to save more money',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondaryLight,
-              ),
+              style: theme.textTheme.bodySmall,
             ),
           ],
         ),
@@ -907,7 +880,42 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildSuggestionCard(Map<String, dynamic> suggestion) {
-    Color bgColor = Color(suggestion['color']);
+    final theme = Get.theme;
+
+    Color bgColor;
+    Color textColor;
+
+    switch (suggestion['type']) {
+      case 'info':
+        bgColor = AppColors.info.withValues(alpha: 0.1);
+        textColor = AppColors.info;
+        break;
+      case 'success':
+        bgColor = AppColors.success.withValues(alpha: 0.1);
+        textColor = AppColors.success;
+        break;
+      case 'warning':
+        bgColor = AppColors.warning.withValues(alpha: 0.1);
+        textColor = AppColors.warning;
+        break;
+      default:
+        bgColor = theme.cardColor;
+        textColor =
+            theme.textTheme.bodyMedium?.color ?? AppColors.textPrimaryLight;
+    }
+
+    // Adjust for dark mode visibility if needed, though opacity usually works
+    if (theme.brightness == Brightness.dark) {
+      if (suggestion['type'] == 'info') {
+        textColor = const Color(0xFF64B5F6); // Lighter blue
+      }
+      if (suggestion['type'] == 'success') {
+        textColor = const Color(0xFF81C784); // Lighter green
+      }
+      if (suggestion['type'] == 'warning') {
+        textColor = const Color(0xFFFFB74D); // Lighter orange
+      }
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -924,15 +932,15 @@ class HomeView extends GetView<HomeController> {
             height: 4,
             margin: const EdgeInsets.only(top: 6, right: 12),
             decoration: BoxDecoration(
-              color: Color(suggestion['textColor']),
+              color: textColor,
               shape: BoxShape.circle,
             ),
           ),
           Expanded(
             child: Text(
               suggestion['title'],
-              style: TextStyle(
-                color: AppColors.textPrimaryLight.withValues(alpha: 0.9),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: textColor.withValues(alpha: 0.9),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -944,38 +952,33 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildEmptyState(String title, String message) {
+    final theme = Get.theme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.route_outlined,
             size: 48,
-            color: AppColors.textTertiaryLight,
+            color: theme.disabledColor,
           ),
           const SizedBox(height: 12),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             message,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.textTertiaryLight,
-            ),
-            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall,
           ),
         ],
       ),

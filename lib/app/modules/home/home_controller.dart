@@ -9,16 +9,16 @@ import '../settings/settings_controller.dart';
 class HomeController extends GetxController {
   final LocationController locationController = Get.find<LocationController>();
   final CarDataService carDataService = Get.find<CarDataService>();
-  
+
   final ProfileController profileController = Get.find<ProfileController>();
 
   final recentRoutes = <Map<String, dynamic>>[].obs;
   final smartSuggestions = <Map<String, dynamic>>[].obs;
 
   final moneySavedThisMonth = 0.0.obs;
-  final moneySavedLastMonth = 0.0.obs; 
+  final moneySavedLastMonth = 0.0.obs;
   final totalMoneySaved = 0.0.obs;
-  final savingsGoal = 1000.0.obs; 
+  final savingsGoal = 1000.0.obs;
   final RxString debugLog = ''.obs;
   final totalTripsThisMonth = 0.obs;
   final avgSavingsPerTrip = 0.0.obs;
@@ -44,22 +44,19 @@ class HomeController extends GetxController {
       if (userId == null) return;
 
       final now = DateTime.now();
-      
+
       final startOfThisMonth = DateTime(now.year, now.month, 1);
       final startOfLastMonth = DateTime(now.year, now.month - 1, 1);
 
-      
       final startOfThisMonthUtc = startOfThisMonth.toUtc().toIso8601String();
       final startOfLastMonthUtc = startOfLastMonth.toUtc().toIso8601String();
 
-      
       final responseThisMonth = await Supabase.instance.client
           .from('user_routes')
           .select('saved_amount, estimated_cost')
           .eq('user_id', userId)
           .gte('created_at', startOfThisMonthUtc);
 
-      
       final responseLastMonth = await Supabase.instance.client
           .from('user_routes')
           .select('saved_amount, estimated_cost')
@@ -67,7 +64,6 @@ class HomeController extends GetxController {
           .gte('created_at', startOfLastMonthUtc)
           .lt('created_at', startOfThisMonthUtc);
 
-      
       final responseAllTime = await Supabase.instance.client
           .from('user_routes')
           .select('saved_amount, created_at')
@@ -84,7 +80,6 @@ class HomeController extends GetxController {
       debugPrint('This Month Records: ${responseThisMonth.length}');
       debugPrint('---------------------');
 
-      
       double savedThisMonth = 0;
       int tripsThisMonth = 0;
       for (var item in responseThisMonth) {
@@ -94,7 +89,6 @@ class HomeController extends GetxController {
       double avgSavedThisMonth =
           tripsThisMonth > 0 ? savedThisMonth / tripsThisMonth : 0.0;
 
-      
       double savedLastMonth = 0;
       int tripsLastMonth = 0;
       for (var item in responseLastMonth) {
@@ -104,20 +98,17 @@ class HomeController extends GetxController {
       double avgSavedLastMonth =
           tripsLastMonth > 0 ? savedLastMonth / tripsLastMonth : 0.0;
 
-      
       double savedTotal = 0;
       for (var item in responseAllTime) {
         savedTotal += (item['saved_amount'] ?? 0) as num;
       }
 
-      
       moneySavedThisMonth.value = savedThisMonth;
-      moneySavedLastMonth.value = savedLastMonth; 
+      moneySavedLastMonth.value = savedLastMonth;
       totalMoneySaved.value = savedTotal;
       totalTripsThisMonth.value = tripsThisMonth;
       avgSavingsPerTrip.value = avgSavedThisMonth;
 
-      
       moneySavedTrend.value =
           _calculatePercentageChange(savedLastMonth, savedThisMonth);
       moneySavedTrendPositive.value = savedThisMonth >= savedLastMonth;
@@ -181,7 +172,6 @@ class HomeController extends GetxController {
           dateString = '${difference.inDays} days ago';
         }
 
-        
         final settings = Get.find<SettingsController>();
         String currencySymbol = settings.currency.value;
         double rate = settings.exchangeRate.value;
@@ -191,11 +181,11 @@ class HomeController extends GetxController {
         double saved = ((item['saved_amount'] ?? 0) as num).toDouble();
 
         routes.add({
-          'id': item['id'], 
+          'id': item['id'],
           'to': item['end_address'] ?? item['to_location'] ?? 'Unknown',
           'from': item['start_address'] ?? item['from_location'] ?? 'Unknown',
           'date': dateString,
-          'full_date': createdAt.toString(), 
+          'full_date': createdAt.toString(),
           'cost': '$currencySymbol ${(cost * rate).toStringAsFixed(2)}',
           'saved': '$currencySymbol ${(saved * rate).toStringAsFixed(2)}',
           'mode': item['transport_mode'] ?? 'Car',
@@ -207,7 +197,7 @@ class HomeController extends GetxController {
       }
 
       recentRoutes.assignAll(routes);
-      
+
       loadDashboardStats();
     } catch (e) {
       debugPrint('Error loading recent routes: $e');
@@ -215,27 +205,23 @@ class HomeController extends GetxController {
   }
 
   void _loadSmartSuggestions() {
-    
     smartSuggestions.assignAll([
       {
         'title':
             'Use metro instead of car for trips to Downtown Cairo to save up to 20 per trip',
-        'color': 0xFFE3F2FD, 
-        'textColor': 0xFF1565C0, 
+        'type': 'info',
         'icon': 'train',
       },
       {
         'title':
             'Combine your errands in New Cairo area to save 15 in fuel costs',
-        'color': 0xFFE8F5E9, 
-        'textColor': 0xFF2E7D32, 
+        'type': 'success',
         'icon': 'eco',
       },
       {
         'title':
             'Consider using microbus for medium distance trips (10-20km) for best value',
-        'color': 0xFFFFF3E0, 
-        'textColor': 0xFFEF6C00, 
+        'type': 'warning',
         'icon': 'directions_bus',
       },
     ]);

@@ -5,6 +5,12 @@ class SupabaseConstants {
   static String get anonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 }
 
+class ApiConstants {
+  static String get openRouteServiceKey =>
+      dotenv.env['ORS_API_KEY'] ??
+      '5b3ce3597851110001cf6248dabfee823c124943a4373830acc163ed';
+}
+
 class PricingConstants {
   static const double gasoline80 = 17.75;
   static const double gasoline92 = 19.25;

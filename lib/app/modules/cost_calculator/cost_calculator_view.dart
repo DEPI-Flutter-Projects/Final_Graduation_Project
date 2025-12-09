@@ -10,21 +10,22 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Cost Calculator',
           style: TextStyle(
-            color: AppColors.textPrimaryLight,
+            color: Theme.of(context).textTheme.titleLarge?.color,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+          icon: Icon(Icons.arrow_back_ios_new,
+              color: Theme.of(context).iconTheme.color),
           onPressed: () => Get.back(),
         ),
       ),
@@ -33,43 +34,43 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTripCalculatorCard(),
+            _buildTripCalculatorCard(context),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Quick Presets',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimaryLight,
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _buildPresetButton('5 KM', 5)),
+                Expanded(child: _buildPresetButton('5 KM', 5, context)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildPresetButton('10 KM', 10)),
+                Expanded(child: _buildPresetButton('10 KM', 10, context)),
                 const SizedBox(width: 12),
-                Expanded(child: _buildPresetButton('25 KM', 25)),
+                Expanded(child: _buildPresetButton('25 KM', 25, context)),
               ],
             ),
             const SizedBox(height: 32),
-            _buildResultsSection(),
+            _buildResultsSection(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTripCalculatorCard() {
+  Widget _buildTripCalculatorCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -78,16 +79,16 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.route, color: AppColors.primary),
-              SizedBox(width: 12),
+              const Icon(Icons.route, color: AppColors.primary),
+              const SizedBox(width: 12),
               Text(
                 'Plan Your Trip',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimaryLight,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
                 ),
               ),
             ],
@@ -108,9 +109,11 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               hintText: '0.0',
-              prefixIcon: const Icon(Icons.straighten, color: Colors.grey),
+              prefixIcon: Icon(Icons.straighten,
+                  color: Theme.of(context).disabledColor),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: Theme.of(context).inputDecorationTheme.fillColor ??
+                  Theme.of(context).cardColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
@@ -137,7 +140,7 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                   decoration: BoxDecoration(
                     color: controller.selectedVehicle.value != null
                         ? AppColors.primary.withValues(alpha: 0.05)
-                        : Colors.grey.shade50,
+                        : Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: controller.selectedVehicle.value != null
@@ -153,7 +156,7 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                         decoration: BoxDecoration(
                           color: controller.selectedVehicle.value != null
                               ? AppColors.primary
-                              : Colors.grey.shade300,
+                              : Theme.of(context).disabledColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -174,8 +177,11 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: controller.selectedVehicle.value != null
-                                    ? AppColors.textPrimaryLight
-                                    : Colors.grey.shade600,
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.color
+                                    : Theme.of(context).disabledColor,
                               ),
                             ),
                             if (controller.selectedVehicle.value != null)
@@ -225,17 +231,17 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
     );
   }
 
-  Widget _buildPresetButton(String label, int distance) {
+  Widget _buildPresetButton(String label, int distance, BuildContext context) {
     return ElevatedButton(
       onPressed: () => controller.setPresetDistance(distance),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.textPrimaryLight,
+        backgroundColor: Theme.of(context).cardColor,
+        foregroundColor: Theme.of(context).textTheme.bodyLarge?.color,
         elevation: 0,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.grey.shade200),
+          side: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Text(
@@ -245,7 +251,7 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
     );
   }
 
-  Widget _buildResultsSection() {
+  Widget _buildResultsSection(BuildContext context) {
     return Obx(() {
       if (controller.calculationResults.isEmpty) {
         return Center(
@@ -266,53 +272,50 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Cost Comparison',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimaryLight,
+              color: Theme.of(context).textTheme.titleLarge?.color,
             ),
           ),
           const SizedBox(height: 16),
-          ...controller.calculationResults
-              .asMap()
-              .entries
-              .map((entry) => _buildResultCard(entry.value, entry.key)),
+          ...controller.calculationResults.asMap().entries.map(
+              (entry) => _buildResultCard(entry.value, entry.key, context)),
         ],
       );
     });
   }
 
-  Widget _buildResultCard(Map<String, dynamic> result, int index) {
+  Widget _buildResultCard(
+      Map<String, dynamic> result, int index, BuildContext context) {
     final List<String> badges = result['badges'] ?? [];
     final bool isBestValue = badges.contains('BEST VALUE');
 
-    
     final settings = Get.find<SettingsController>();
     final currency = settings.currency.value;
     final rate = settings.exchangeRate.value;
 
-    
     double cost = 0;
     try {
       final costStr =
           result['cost'].toString().replaceAll(RegExp(r'[^0-9.]'), '');
       cost = double.parse(costStr);
     } catch (e) {
-      
+      // Ignored
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         border:
             isBestValue ? Border.all(color: AppColors.success, width: 2) : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -322,7 +325,6 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
         borderRadius: BorderRadius.circular(20),
         child: Stack(
           children: [
-            
             if (badges.isNotEmpty)
               Positioned(
                 top: 0,
@@ -360,12 +362,10 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                   }).toList(),
                 ),
               ),
-
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -388,10 +388,13 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                           children: [
                             Text(
                               result['mode'],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimaryLight,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.color,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -408,7 +411,6 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -439,9 +441,10 @@ class CostCalculatorView extends GetView<CostCalculatorController> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade200),
+                          border:
+                              Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: Row(
                           children: [
