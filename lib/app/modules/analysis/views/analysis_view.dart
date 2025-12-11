@@ -5,6 +5,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/theme/app_colors.dart';
 import '../controllers/analysis_controller.dart';
 import '../../settings/settings_controller.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../widgets/chart_guide_dialog.dart';
 
 class AnalysisView extends GetView<AnalysisController> {
   const AnalysisView({super.key});
@@ -72,7 +74,9 @@ class AnalysisView extends GetView<AnalysisController> {
                           'Total Trips',
                           '${controller.totalTrips.value}',
                           Icons.directions_car_outlined,
-                          AppColors.primary,
+                          Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.accent
+                              : AppColors.primary,
                         ),
                       ),
                     ],
@@ -100,11 +104,26 @@ class AnalysisView extends GetView<AnalysisController> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  _buildBarChart(context),
+                  _buildChartSection(
+                    context,
+                    'Savings Analysis',
+                    _buildBarChart(context),
+                    'savings',
+                  ),
                   const SizedBox(height: 32),
-                  _buildTrendChart(context),
+                  _buildChartSection(
+                    context,
+                    'Savings Trend',
+                    _buildTrendChart(context),
+                    'trend',
+                  ),
                   const SizedBox(height: 32),
-                  _buildModeChart(context),
+                  _buildChartSection(
+                    context,
+                    'Transport Modes',
+                    _buildModeChart(context),
+                    'mode',
+                  ),
                   const SizedBox(height: 32),
                 ],
               )
@@ -119,6 +138,10 @@ class AnalysisView extends GetView<AnalysisController> {
   }
 
   Widget _buildTrendChart(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final lineColor = isDark ? AppColors.accent : AppColors.primary;
+    final gradientColor = isDark ? AppColors.accent : AppColors.primary;
+
     return SizedBox(
       height: 200,
       child: Obx(() {
@@ -137,13 +160,13 @@ class AnalysisView extends GetView<AnalysisController> {
               LineChartBarData(
                 spots: controller.savingsTrendData,
                 isCurved: true,
-                color: AppColors.primary,
+                color: lineColor,
                 barWidth: 3,
                 isStrokeCapRound: true,
                 dotData: const FlDotData(show: false),
                 belowBarData: BarAreaData(
                   show: true,
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: gradientColor.withValues(alpha: 0.1),
                 ),
               ),
             ],
@@ -161,8 +184,10 @@ class AnalysisView extends GetView<AnalysisController> {
 
                     return LineTooltipItem(
                       '$currency ${(spot.y * rate).toStringAsFixed(0)}',
-                      const TextStyle(
+                      TextStyle(
                         fontWeight: FontWeight.bold,
+                        color: AppColors
+                            .primary, // Ensure text is visible on white tooltip
                       ),
                     );
                   }).toList();
@@ -278,10 +303,18 @@ class AnalysisView extends GetView<AnalysisController> {
           return const Center(child: Text('No data available'));
         }
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         final isMoney = controller.selectedMetric.value == 'Money Saved';
+
+        // For Trips in Dark Mode, use Accent (Cyan) which pops against dark background.
+        // For Money, Success (Green) is usually fine, but ensure it's bright enough.
+        final tripsColor = isDark ? AppColors.accent : AppColors.primary;
+        final tripsColorLighter =
+            isDark ? AppColors.accentLight : AppColors.primaryLight;
+
         final gradientColors = isMoney
             ? [AppColors.success, AppColors.success.withValues(alpha: 0.6)]
-            : [AppColors.primary, AppColors.primary.withValues(alpha: 0.6)];
+            : [tripsColor, tripsColorLighter];
 
         return BarChart(
           BarChartData(
@@ -445,20 +478,19 @@ class AnalysisView extends GetView<AnalysisController> {
       onTap: () => controller.setMetric(label),
       child: Obx(() {
         final isSelected = controller.selectedMetric.value == label;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    )
-                  ]
-                : null,
+            color: isSelected ? AppColors.primary : Colors.transparent,
+            borderRadius:
+                BorderRadius.circular(20), // More rounded to match chips
+            border: Border.all(
+              color: isSelected
+                  ? AppColors.primary
+                  : Theme.of(Get.context!).dividerColor,
+              width: 1,
+            ),
           ),
           child: Text(
             label,
@@ -466,8 +498,8 @@ class AnalysisView extends GetView<AnalysisController> {
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: isSelected
-                  ? Theme.of(Get.context!).textTheme.bodyLarge?.color
-                  : Theme.of(Get.context!).disabledColor,
+                  ? Colors.white
+                  : Theme.of(Get.context!).textTheme.bodyMedium?.color,
             ),
           ),
         );
@@ -542,6 +574,74 @@ class AnalysisView extends GetView<AnalysisController> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildChartSection(
+      BuildContext context, String title, Widget chart, String infoKey) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  _showInfoDialog(context, title, infoKey);
+                },
+                icon: Icon(
+                  Icons.info_outline_rounded,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.accent
+                      : Theme.of(context).primaryColor,
+                  size: 22,
+                ),
+                tooltip: 'How to read this chart',
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).shadowColor.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: chart,
+        ),
+      ],
+    );
+  }
+
+  void _showInfoDialog(BuildContext context, String title, String chartType) {
+    Get.dialog(
+      ChartGuideDialog(
+        title: title,
+        chartType: chartType,
+      ),
+      transitionDuration: const Duration(milliseconds: 300),
+      transitionCurve: Curves.easeOutCubic,
     );
   }
 }

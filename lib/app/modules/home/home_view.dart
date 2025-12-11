@@ -847,18 +847,26 @@ class HomeView extends GetView<HomeController> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.warning.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.warning.withValues(alpha: 0.2),
+                AppColors.warning.withValues(alpha: 0.05)
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.warning.withValues(alpha: 0.2)),
           ),
           child: const Icon(
-            Icons.bolt,
+            Icons.auto_awesome_rounded,
             color: AppColors.warning,
-            size: 18,
+            size: 20,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -870,7 +878,7 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             Text(
-              'Smart tips to save more money',
+              'AI-powered tips to save more',
               style: theme.textTheme.bodySmall,
             ),
           ],
@@ -881,74 +889,147 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildSuggestionCard(Map<String, dynamic> suggestion) {
     final theme = Get.theme;
+    final isDark = theme.brightness == Brightness.dark;
 
-    Color bgColor;
-    Color textColor;
+    Color startColor;
+    Color endColor;
+    IconData icon;
+    Color iconColor;
 
+    // Determine type-based colors
     switch (suggestion['type']) {
       case 'info':
-        bgColor = AppColors.info.withValues(alpha: 0.1);
-        textColor = AppColors.info;
+        startColor = isDark
+            ? const Color(0xFF1565C0).withValues(alpha: 0.2)
+            : const Color(0xFFE3F2FD);
+        endColor = isDark
+            ? const Color(0xFF0D47A1).withValues(alpha: 0.1)
+            : const Color(0xFFBBDEFB);
+        iconColor = isDark ? const Color(0xFF64B5F6) : const Color(0xFF1976D2);
+        icon = Icons.lightbulb_outline_rounded;
         break;
       case 'success':
-        bgColor = AppColors.success.withValues(alpha: 0.1);
-        textColor = AppColors.success;
+        startColor = isDark
+            ? const Color(0xFF2E7D32).withValues(alpha: 0.2)
+            : const Color(0xFFE8F5E9);
+        endColor = isDark
+            ? const Color(0xFF1B5E20).withValues(alpha: 0.1)
+            : const Color(0xFFC8E6C9);
+        iconColor = isDark ? const Color(0xFF81C784) : const Color(0xFF388E3C);
+        icon = Icons.savings_outlined;
         break;
       case 'warning':
-        bgColor = AppColors.warning.withValues(alpha: 0.1);
-        textColor = AppColors.warning;
+        startColor = isDark
+            ? const Color(0xFFEF6C00).withValues(alpha: 0.2)
+            : const Color(0xFFFFF3E0);
+        endColor = isDark
+            ? const Color(0xFFE65100).withValues(alpha: 0.1)
+            : const Color(0xFFFFE0B2);
+        iconColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFF57C00);
+        icon = Icons.bolt_rounded;
         break;
       default:
-        bgColor = theme.cardColor;
-        textColor =
-            theme.textTheme.bodyMedium?.color ?? AppColors.textPrimaryLight;
+        startColor = theme.cardColor;
+        endColor = theme.cardColor;
+        iconColor = theme.iconTheme.color!;
+        icon = Icons.info_outline_rounded;
     }
 
-    // Adjust for dark mode visibility if needed, though opacity usually works
-    if (theme.brightness == Brightness.dark) {
-      if (suggestion['type'] == 'info') {
-        textColor = const Color(0xFF64B5F6); // Lighter blue
-      }
-      if (suggestion['type'] == 'success') {
-        textColor = const Color(0xFF81C784); // Lighter green
-      }
-      if (suggestion['type'] == 'warning') {
-        textColor = const Color(0xFFFFB74D); // Lighter orange
-      }
+    // Dynamic icon override based on content
+    final title = suggestion['title'].toString().toLowerCase();
+    if (title.contains('metro')) {
+      icon = Icons.directions_subway_outlined;
+    } else if (title.contains('microbus')) {
+      icon = Icons.directions_bus_outlined;
+    } else if (title.contains('fuel') || title.contains('car')) {
+      icon = Icons.directions_car_outlined;
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 4,
-            height: 4,
-            margin: const EdgeInsets.only(top: 6, right: 12),
-            decoration: BoxDecoration(
-              color: textColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              suggestion['title'],
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor.withValues(alpha: 0.9),
-                fontSize: 13,
-                height: 1.4,
-              ),
-            ),
+        gradient: LinearGradient(
+          colors: [startColor, endColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: iconColor.withValues(alpha: 0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-    ).animate().fadeIn(delay: 100.ms);
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Decorative background icon
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Transform.rotate(
+                angle: -0.2,
+                child: Icon(
+                  icon,
+                  size: 100,
+                  color: iconColor.withValues(alpha: 0.1),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: theme.cardColor.withValues(alpha: 0.6),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Icon(icon, color: iconColor, size: 24),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          suggestion['title'],
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            height: 1.4,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.9)
+                                : Colors.black87,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    )
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideX(begin: 0.05, curve: Curves.easeOut);
   }
 
   Widget _buildEmptyState(String title, String message) {
